@@ -1,268 +1,295 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NSP FIFA WORLD CUP LIVE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<style>
-:root{
-  --bg:#0B0F19; --card:#151B2D; --hover:#1C2440;
-  --accent:#00E5FF; --live:#00FF88; --warn:#FFD700;
-  --error:#FF4D4D; --text:#FFFFFF; --text2:#AAB2C8;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:'Hind Siliguri','Poppins',sans-serif;
-  overflow-x:hidden;padding-bottom:70px;
-}
-::selection{background:var(--accent);color:#000}
-a{color:inherit;text-decoration:none}
-img{display:block;max-width:100%}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NSP SPORTS · লাইভ স্ট্রিম</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0B0F19; --card:#151B2D; --hover:#1C2440;
+      --accent:#00E5FF; --live:#00FF88; --warn:#FFD700;
+      --error:#FF4D4D; --text:#FFFFFF; --text2:#AAB2C8;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--bg);color:var(--text);
+      font-family:'Hind Siliguri','Poppins',sans-serif;
+      overflow-x:hidden;padding-bottom:70px;
+    }
+    ::selection{background:var(--accent);color:#000}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
 
-/* Scrollbar */
-::-webkit-scrollbar{height:6px;width:6px}
-::-webkit-scrollbar-thumb{background:var(--hover);border-radius:10px}
+    /* scroll */
+    ::-webkit-scrollbar{height:6px;width:6px}
+    ::-webkit-scrollbar-thumb{background:var(--hover);border-radius:10px}
 
-/* Animations */
-@keyframes pulse{0%{transform:scale(.95);opacity:.7}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.95);opacity:.7}}
-@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,229,255,.4)}50%{box-shadow:0 0 22px rgba(0,229,255,.8)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes shimmer{0%{background-position:-450px 0}100%{background-position:450px 0}}
-@keyframes blink{50%{opacity:.3}}
+    /* animations */
+    @keyframes pulse{0%{transform:scale(.95);opacity:.7}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.95);opacity:.7}}
+    @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,229,255,.4)}50%{box-shadow:0 0 22px rgba(0,229,255,.8)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes shimmer{0%{background-position:-450px 0}100%{background-position:450px 0}}
+    @keyframes blink{50%{opacity:.3}}
 
-.reveal{opacity:0}
-.reveal.show{animation:fadeUp .7s ease forwards}
+    .reveal{opacity:0}
+    .reveal.show{animation:fadeUp .7s ease forwards}
 
-/* Header */
-header{
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;
-  background:rgba(11,15,25,.72);
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
-.logo .ball{
-  width:34px;height:34px;border-radius:50%;
-  background:radial-gradient(circle at 30% 30%,var(--accent),#0077aa);
-  display:grid;place-items:center;font-size:18px;
-  animation:glow 2.6s infinite;
-}
-.logo span b{color:var(--accent)}
-nav.top{display:flex;gap:22px}
-nav.top a{color:var(--text2);font-size:14px;font-weight:500;transition:.25s}
-nav.top a:hover,nav.top a.active{color:var(--accent)}
-.live-badge{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(255,77,77,.12);border:1px solid var(--error);
-  padding:5px 12px;border-radius:30px;font-size:12px;font-weight:600;color:var(--error);
-}
-.live-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--error);animation:pulse 1.3s infinite}
-@media(max-width:760px){nav.top{display:none}}
+    /* header */
+    header{
+      position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 18px;
+      background:rgba(11,15,25,.72);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+    .logo .ball{
+      width:34px;height:34px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,var(--accent),#0077aa);
+      display:grid;place-items:center;font-size:18px;
+      animation:glow 2.6s infinite;
+    }
+    .logo span b{color:var(--accent)}
+    nav.top{display:flex;gap:22px}
+    nav.top a{color:var(--text2);font-size:14px;font-weight:500;transition:.25s}
+    nav.top a:hover,nav.top a.active{color:var(--accent)}
+    .live-badge{
+      display:flex;align-items:center;gap:6px;
+      background:rgba(255,77,77,.12);border:1px solid var(--error);
+      padding:4px 12px;border-radius:30px;font-size:12px;font-weight:600;color:var(--error);
+    }
+    .live-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--error);animation:pulse 1.3s infinite}
+    @media(max-width:760px){nav.top{display:none}}
 
-/* Hero */
-.hero{
-  position:relative;margin:18px;border-radius:22px;overflow:hidden;
-  min-height:330px;display:flex;align-items:flex-end;
-  background:
-    linear-gradient(120deg,rgba(11,15,25,.95) 10%,rgba(11,15,25,.4) 60%,rgba(0,229,255,.12)),
-    radial-gradient(circle at 80% 20%,rgba(0,229,255,.25),transparent 50%),
-    var(--card);
-  border:1px solid rgba(255,255,255,.06);
-}
-.hero-content{padding:28px 26px;max-width:620px;z-index:2}
-.tag{
-  display:inline-flex;align-items:center;gap:7px;background:rgba(0,255,136,.12);
-  color:var(--live);border:1px solid var(--live);padding:5px 12px;border-radius:30px;
-  font-size:12px;font-weight:600;margin-bottom:14px;
-}
-.tag .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
-.hero h1{font-size:clamp(24px,5vw,40px);line-height:1.25;margin-bottom:8px}
-.hero h1 .vs{color:var(--warn)}
-.hero p{color:var(--text2);font-size:14px;margin-bottom:20px}
-.btn{
-  cursor:pointer;border:none;font-family:inherit;font-weight:600;
-  border-radius:12px;transition:.25s;display:inline-flex;align-items:center;gap:8px;
-}
-.btn-primary{
-  background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;
-  padding:13px 26px;font-size:15px;animation:glow 3s infinite;
-}
-.btn-primary:hover{transform:translateY(-3px) scale(1.03)}
-.btn-ghost{background:rgba(255,255,255,.07);color:var(--text);padding:13px 20px;border:1px solid rgba(255,255,255,.1)}
-.btn-ghost:hover{background:var(--hover)}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    /* hero */
+    .hero{
+      position:relative;margin:16px;border-radius:22px;overflow:hidden;
+      min-height:200px;display:flex;align-items:center;
+      background:linear-gradient(120deg,rgba(11,15,25,.95) 10%,rgba(11,15,25,.4) 60%,rgba(0,229,255,.12)),
+                 radial-gradient(circle at 80% 20%,rgba(0,229,255,.25),transparent 50%),
+                 var(--card);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .hero-content{padding:24px 26px;max-width:600px;z-index:2}
+    .tag{
+      display:inline-flex;align-items:center;gap:7px;background:rgba(0,255,136,.12);
+      color:var(--live);border:1px solid var(--live);padding:4px 12px;border-radius:30px;
+      font-size:12px;font-weight:600;margin-bottom:12px;
+    }
+    .tag .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
+    .hero h1{font-size:clamp(22px,4.5vw,36px);line-height:1.2;margin-bottom:6px}
+    .hero h1 .vs{color:var(--warn)}
+    .hero p{color:var(--text2);font-size:14px;margin-bottom:18px}
+    .btn{
+      cursor:pointer;border:none;font-family:inherit;font-weight:600;
+      border-radius:12px;transition:.25s;display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;
+      padding:12px 24px;font-size:15px;animation:glow 3s infinite;
+    }
+    .btn-primary:hover{transform:translateY(-3px) scale(1.03)}
+    .btn-ghost{background:rgba(255,255,255,.07);color:var(--text);padding:12px 18px;border:1px solid rgba(255,255,255,.1)}
+    .btn-ghost:hover{background:var(--hover)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 
-/* Sections */
-.section{padding:10px 18px 30px}
-.section h2{font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.section h2::before{content:"";width:5px;height:22px;border-radius:6px;background:var(--accent)}
+    /* sections */
+    .section{padding:10px 18px 30px}
+    .section h2{font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section h2::before{content:"";width:5px;height:22px;border-radius:6px;background:var(--accent)}
 
-/* Player */
-.player-wrap{
-  background:var(--card);border:1px solid rgba(255,255,255,.06);
-  border-radius:20px;overflow:hidden;
-}
-.video-box{position:relative;background:#000;aspect-ratio:16/9;width:100%}
-#video{width:100%;height:100%;object-fit:contain;background:#000}
-.spinner-overlay,.error-overlay{
-  position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;background:rgba(11,15,25,.85);text-align:center;padding:20px;z-index:5;
-}
-.spinner-overlay.active,.error-overlay.active{display:flex}
-.spinner{width:54px;height:54px;border:5px solid rgba(255,255,255,.15);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
-.spinner-overlay p{color:var(--text2);font-size:14px}
-.error-overlay .ic{font-size:46px}
-.error-overlay h3{color:var(--error)}
-.error-overlay p{color:var(--text2);font-size:14px;max-width:340px}
+    /* player */
+    .player-wrap{
+      background:var(--card);border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;overflow:hidden;
+    }
+    .video-box{position:relative;background:#000;aspect-ratio:16/9;width:100%}
+    #video{width:100%;height:100%;object-fit:contain;background:#000}
+    .spinner-overlay,.error-overlay{
+      position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+      gap:14px;background:rgba(11,15,25,.85);text-align:center;padding:20px;z-index:5;
+    }
+    .spinner-overlay.active,.error-overlay.active{display:flex}
+    .spinner{width:54px;height:54px;border:5px solid rgba(255,255,255,.15);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
+    .spinner-overlay p{color:var(--text2);font-size:14px}
+    .error-overlay .ic{font-size:46px}
+    .error-overlay h3{color:var(--error)}
+    .error-overlay p{color:var(--text2);font-size:14px;max-width:340px}
 
-/* Custom controls */
-.controls{
-  display:flex;align-items:center;gap:10px;padding:12px 14px;
-  background:linear-gradient(0deg,var(--card),rgba(28,36,64,.6));flex-wrap:wrap;
-}
-.ctrl{
-  background:rgba(255,255,255,.07);border:none;color:var(--text);cursor:pointer;
-  width:42px;height:42px;border-radius:11px;font-size:17px;display:grid;place-items:center;transition:.2s;
-}
-.ctrl:hover{background:var(--accent);color:#06121a;transform:translateY(-2px)}
-.vol{display:flex;align-items:center;gap:8px;flex:1;min-width:120px;max-width:200px}
-input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:5px;background:var(--hover);cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent)}
-.quality-ind{
-  margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);
-  background:rgba(255,255,255,.05);padding:6px 12px;border-radius:20px;
-}
-.conn-dot{width:9px;height:9px;border-radius:50%;background:var(--live)}
-.conn-dot.weak{background:var(--warn)}
-.conn-dot.off{background:var(--error)}
+    /* controls */
+    .controls{
+      display:flex;align-items:center;gap:10px;padding:10px 14px;
+      background:linear-gradient(0deg,var(--card),rgba(28,36,64,.6));flex-wrap:wrap;
+    }
+    .ctrl{
+      background:rgba(255,255,255,.07);border:none;color:var(--text);cursor:pointer;
+      width:40px;height:40px;border-radius:11px;font-size:17px;display:grid;place-items:center;transition:.2s;
+    }
+    .ctrl:hover{background:var(--accent);color:#06121a;transform:translateY(-2px)}
+    .vol{display:flex;align-items:center;gap:8px;flex:1;min-width:120px;max-width:200px}
+    input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:5px;background:var(--hover);cursor:pointer}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent)}
+    .quality-ind{
+      margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);
+      background:rgba(255,255,255,.05);padding:4px 12px;border-radius:20px;
+    }
+    .conn-dot{width:9px;height:9px;border-radius:50%;background:var(--live)}
+    .conn-dot.weak{background:var(--warn)}
+    .conn-dot.off{background:var(--error)}
 
-/* Stream switcher */
-.switcher{display:flex;gap:10px;padding:14px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.05)}
-.stream-btn{
-  background:var(--hover);border:1px solid rgba(255,255,255,.08);color:var(--text2);
-  padding:9px 16px;border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;
-  font-family:inherit;transition:.25s;display:flex;align-items:center;gap:7px;
-}
-.stream-btn:hover{color:var(--text);border-color:var(--accent)}
-.stream-btn.active{background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;border-color:transparent}
-.stream-btn .live-mini{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
+    /* switcher */
+    .switcher{display:flex;gap:10px;padding:14px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.05)}
+    .stream-btn{
+      background:var(--hover);border:1px solid rgba(255,255,255,.08);color:var(--text2);
+      padding:8px 16px;border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;
+      font-family:inherit;transition:.25s;display:flex;align-items:center;gap:7px;
+    }
+    .stream-btn:hover{color:var(--text);border-color:var(--accent)}
+    .stream-btn.active{background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;border-color:transparent}
+    .stream-btn .live-mini{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
 
-/* extra action row */
-.extra-actions{display:flex;gap:10px;padding:0 14px 16px;flex-wrap:wrap}
-.extra-actions .btn-ghost{padding:9px 16px;font-size:13px;border-radius:10px}
+    /* extra */
+    .extra-actions{display:flex;gap:10px;padding:0 14px 16px;flex-wrap:wrap}
+    .extra-actions .btn-ghost{padding:8px 16px;font-size:13px;border-radius:10px}
 
-/* Match info panel */
-.match-panel{
-  margin-top:18px;background:var(--card);border:1px solid rgba(255,255,255,.06);
-  border-radius:20px;padding:22px;
-}
-.score-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
-.team{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1}
-.team .flag{
-  width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:34px;
-  background:var(--hover);border:2px solid rgba(255,255,255,.1);
-}
-.team h3{font-size:16px}
-.vs-box{text-align:center}
-.vs-box .vs-text{font-size:24px;font-weight:700;color:var(--warn)}
-.vs-box .status{
-  margin-top:6px;font-size:11px;color:var(--live);border:1px solid var(--live);
-  padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;
-}
-.vs-box .status .dot{width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
-.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:22px}
-.meta-card{background:var(--hover);border-radius:14px;padding:14px;text-align:center}
-.meta-card .lbl{font-size:11px;color:var(--text2);margin-bottom:6px}
-.meta-card .val{font-size:15px;font-weight:600;color:var(--accent)}
-.countdown{font-variant-numeric:tabular-nums}
+    /* add link panel */
+    .add-link-panel{
+      margin-top:20px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .add-link-panel h3{font-size:16px;display:flex;align-items:center;gap:8px}
+    .add-link-panel .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .add-link-panel input{
+      flex:1 1 240px;
+      background:var(--hover);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:30px;
+      padding:12px 18px;
+      font-family:inherit;
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+      transition:.2s;
+    }
+    .add-link-panel input:focus{border-color:var(--accent)}
+    .add-link-panel .btn-sm{
+      padding:10px 22px;
+      border-radius:30px;
+      font-weight:600;
+      background:linear-gradient(135deg,var(--accent),#0099cc);
+      color:#06121a;
+      border:none;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:14px;
+      transition:.25s;
+    }
+    .add-link-panel .btn-sm:hover{transform:scale(1.03)}
+    .link-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:6px;
+    }
+    .link-list .chip{
+      background:var(--hover);
+      border-radius:30px;
+      padding:6px 16px 6px 18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .link-list .chip button{
+      background:transparent;
+      border:none;
+      color:var(--error);
+      font-size:16px;
+      cursor:pointer;
+      line-height:1;
+      transition:.2s;
+    }
+    .link-list .chip button:hover{transform:scale(1.2)}
 
-/* Related grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-.match-card{
-  background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;
-  overflow:hidden;cursor:pointer;transition:.3s;
-}
-.match-card:hover{transform:translateY(-6px);background:var(--hover);box-shadow:0 14px 30px rgba(0,0,0,.4)}
-.card-thumb{
-  height:120px;position:relative;display:grid;place-items:center;font-size:40px;
-  background:radial-gradient(circle at 70% 30%,rgba(0,229,255,.25),transparent 60%),var(--hover);
-}
-.card-thumb .lv{
-  position:absolute;top:10px;left:10px;font-size:10px;background:var(--error);color:#fff;
-  padding:3px 8px;border-radius:20px;font-weight:600;display:flex;align-items:center;gap:5px;
-}
-.card-thumb .lv .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1s infinite}
-.card-thumb .up{position:absolute;top:10px;left:10px;font-size:10px;background:var(--warn);color:#000;padding:3px 8px;border-radius:20px;font-weight:600}
-.card-body{padding:14px}
-.card-body h4{font-size:14px;margin-bottom:6px}
-.card-body p{font-size:12px;color:var(--text2)}
+    /* bottom nav */
+    .bottom-nav{
+      position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;
+      justify-content:space-around;padding:8px 6px;
+      background:rgba(11,15,25,.92);backdrop-filter:blur(14px);
+      border-top:1px solid rgba(255,255,255,.07);
+    }
+    .bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text2);transition:.2s}
+    .bottom-nav a.active,.bottom-nav a:active{color:var(--accent)}
+    .bottom-nav a .i{font-size:19px}
+    @media(max-width:760px){.bottom-nav{display:flex}}
 
-/* Skeleton */
-.skeleton{
-  background:linear-gradient(90deg,var(--card) 25%,var(--hover) 50%,var(--card) 75%);
-  background-size:900px 100%;animation:shimmer 1.4s infinite;
-}
+    /* toast */
+    .toast{
+      position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);
+      background:var(--hover);border:1px solid var(--accent);color:var(--text);
+      padding:10px 20px;border-radius:30px;font-size:13px;opacity:0;pointer-events:none;
+      transition:.4s;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.5);
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Footer */
-footer{
-  margin:30px 18px;padding:26px;border-radius:20px;text-align:center;
-  background:var(--card);border:1px solid rgba(255,255,255,.06);
-}
-footer .brand{font-weight:700;font-size:16px;margin-bottom:6px}
-footer .brand b{color:var(--accent)}
-footer p{color:var(--text2);font-size:13px;margin-bottom:14px}
-.foot-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.foot-links a{
-  background:var(--hover);padding:9px 16px;border-radius:30px;font-size:13px;
-  display:flex;align-items:center;gap:7px;transition:.25s;border:1px solid rgba(255,255,255,.06);
-}
-.foot-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-.badge{margin-top:16px;font-size:11px;color:var(--text2)}
-.badge span{color:var(--accent)}
+    /* footer */
+    footer{
+      margin:30px 18px;padding:26px;border-radius:20px;text-align:center;
+      background:var(--card);border:1px solid rgba(255,255,255,.06);
+    }
+    footer .brand{font-weight:700;font-size:16px;margin-bottom:6px}
+    footer .brand b{color:var(--accent)}
+    footer p{color:var(--text2);font-size:13px;margin-bottom:14px}
+    .foot-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .foot-links a{
+      background:var(--hover);padding:8px 16px;border-radius:30px;font-size:13px;
+      display:flex;align-items:center;gap:7px;transition:.25s;border:1px solid rgba(255,255,255,.06);
+    }
+    .foot-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+    .badge{margin-top:16px;font-size:11px;color:var(--text2)}
+    .badge span{color:var(--accent)}
 
-/* Bottom nav (mobile) */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;
-  justify-content:space-around;padding:8px 6px;
-  background:rgba(11,15,25,.92);backdrop-filter:blur(14px);
-  border-top:1px solid rgba(255,255,255,.07);
-}
-.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text2);transition:.2s}
-.bottom-nav a.active,.bottom-nav a:active{color:var(--accent)}
-.bottom-nav a .i{font-size:19px}
-@media(max-width:760px){.bottom-nav{display:flex}}
-
-/* toast */
-.toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);
-  background:var(--hover);border:1px solid var(--accent);color:var(--text);
-  padding:12px 20px;border-radius:30px;font-size:13px;opacity:0;pointer-events:none;
-  transition:.4s;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.5);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-</style>
+    /* pc/laptop fix – wider player */
+    @media(min-width:1024px){
+      .section{padding:10px 40px 30px}
+      .hero{margin:20px 40px}
+      footer{margin:30px 40px}
+      .controls{padding:12px 24px}
+      .switcher{padding:14px 24px}
+      .extra-actions{padding:0 24px 16px}
+      .video-box{aspect-ratio:16/9}
+      .add-link-panel{padding:26px}
+    }
+    @media(max-width:1024px) and (min-width:768px){
+      .section{padding:10px 28px 30px}
+      .hero{margin:18px 28px}
+      footer{margin:30px 28px}
+    }
+  </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <div class="ball">⚽</div>
-    <span>NSP <b>FIFA</b> LIVE</span>
-  </div>
+  <div class="logo"><div class="ball">⚽</div><span>NSP <b>SPORTS</b></span></div>
   <nav class="top">
     <a href="#home" class="active">হোম</a>
     <a href="#player">লাইভ</a>
-    <a href="#matches">ম্যাচ</a>
+    <a href="#linkpanel">চ্যানেল +</a>
   </nav>
   <div class="live-badge"><span class="dot"></span> LIVE</div>
 </header>
@@ -270,12 +297,12 @@ footer p{color:var(--text2);font-size:13px;margin-bottom:14px}
 <!-- HERO -->
 <section class="hero reveal" id="home">
   <div class="hero-content">
-    <span class="tag" id="liveTag"><span class="dot"></span> এখন লাইভ চলছে</span>
-    <h1>Argentina <span class="vs">vs</span> Brazil</h1>
-    <p>FIFA World Cup — সরাসরি সম্প্রচার উপভোগ করুন এইচডি কোয়ালিটিতে।</p>
+    <span class="tag"><span class="dot"></span> সরাসরি সম্প্রচার</span>
+    <h1>স্পোর্টস <span class="vs">·</span> লাইভ স্ট্রিম</h1>
+    <p>আইপি টিভি চ্যানেল · নির্দিষ্ট সময়ে খেলা দেখুন</p>
     <div class="hero-actions">
       <button class="btn btn-primary" onclick="scrollToPlayer()">▶ এখনই দেখুন</button>
-      <button class="btn btn-ghost" onclick="shareSite()">🔗 শেয়ার করুন</button>
+      <button class="btn btn-ghost" onclick="shareSite()">🔗 শেয়ার</button>
     </div>
   </div>
 </section>
@@ -286,92 +313,58 @@ footer p{color:var(--text2);font-size:13px;margin-bottom:14px}
   <div class="player-wrap">
     <div class="video-box">
       <video id="video" playsinline></video>
-
       <div class="spinner-overlay active" id="spinner">
         <div class="spinner"></div>
         <p id="spinnerText">স্ট্রিম লোড হচ্ছে...</p>
       </div>
-
       <div class="error-overlay" id="errorOverlay">
         <div class="ic">📡</div>
         <h3>স্ট্রিম পাওয়া যায়নি</h3>
-        <p id="errorText">দুঃখিত, এই মুহূর্তে স্ট্রিম উপলব্ধ নেই। অনুগ্রহ করে আবার চেষ্টা করুন বা অন্য চ্যানেল নির্বাচন করুন।</p>
-        <button class="btn btn-primary" onclick="retryStream()">🔄 আবার চেষ্টা করুন</button>
+        <p id="errorText">দুঃখিত, এই মুহূর্তে স্ট্রিম উপলব্ধ নেই। অন্য চ্যানেল নির্বাচন করুন বা লিংক যোগ করুন।</p>
+        <button class="btn btn-primary" onclick="retryStream()">🔄 আবার চেষ্টা</button>
       </div>
     </div>
 
-    <!-- Controls -->
+    <!-- controls -->
     <div class="controls">
-      <button class="ctrl" id="playBtn" title="চালু/বন্ধ">▶</button>
-      <button class="ctrl" id="muteBtn" title="মিউট">🔊</button>
-      <div class="vol">
-        <input type="range" id="volRange" min="0" max="1" step="0.01" value="1">
-      </div>
-      <button class="ctrl" id="pipBtn" title="পিকচার ইন পিকচার">🗔</button>
-      <button class="ctrl" id="fsBtn" title="ফুলস্ক্রিন">⛶</button>
+      <button class="ctrl" id="playBtn">▶</button>
+      <button class="ctrl" id="muteBtn">🔊</button>
+      <div class="vol"><input type="range" id="volRange" min="0" max="1" step="0.01" value="1"></div>
+      <button class="ctrl" id="pipBtn">🗔</button>
+      <button class="ctrl" id="fsBtn">⛶</button>
       <div class="quality-ind">
         <span class="conn-dot" id="connDot"></span>
-        <span id="connText">কানেকশন: ভালো</span> · <span id="qualityText">HD</span>
+        <span id="connText">সংযোগ: ভালো</span> · <span id="qualityText">HD</span>
       </div>
     </div>
 
-    <!-- Stream switcher -->
+    <!-- switcher -->
     <div class="switcher" id="switcher"></div>
 
     <!-- extra actions -->
     <div class="extra-actions">
-      <button class="btn btn-ghost" onclick="retryStream()">🔄 রিফ্রেশ স্ট্রিম</button>
+      <button class="btn btn-ghost" onclick="retryStream()">🔄 রিফ্রেশ</button>
       <button class="btn btn-ghost" onclick="copyLink()">📋 লিংক কপি</button>
       <button class="btn btn-ghost" onclick="shareSite()">📤 শেয়ার</button>
     </div>
   </div>
 
-  <!-- MATCH INFO PANEL -->
-  <div class="match-panel" id="matchInfo">
-    <div class="score-row">
-      <div class="team">
-        <div class="flag">🇦🇷</div>
-        <h3>Argentina</h3>
-      </div>
-      <div class="vs-box">
-        <div class="vs-text">VS</div>
-        <span class="status"><span class="dot"></span> চলছে</span>
-      </div>
-      <div class="team">
-        <div class="flag">🇧🇷</div>
-        <h3>Brazil</h3>
-      </div>
+  <!-- ADD LINK PANEL (matches replaced) -->
+  <div class="add-link-panel reveal" id="linkpanel">
+    <h3>➕ চ্যানেল লিংক যোগ করুন</h3>
+    <div class="row">
+      <input type="text" id="newLinkInput" placeholder="http://example.com/stream.m3u8" />
+      <input type="text" id="newLinkName" placeholder="চ্যানেলের নাম (ঐচ্ছিক)" style="flex:0.7;min-width:140px;" />
+      <button class="btn-sm" onclick="addUserStream()">যোগ করুন</button>
     </div>
-    <div class="meta-grid">
-      <div class="meta-card">
-        <div class="lbl">টুর্নামেন্ট</div>
-        <div class="val">FIFA World Cup</div>
-      </div>
-      <div class="meta-card">
-        <div class="lbl">⏱ বাংলাদেশ সময়</div>
-        <div class="val" id="bdClock">--:--:--</div>
-      </div>
-      <div class="meta-card">
-        <div class="lbl">⏳ শুরু হতে</div>
-        <div class="val countdown" id="countdown">LIVE</div>
-      </div>
-      <div class="meta-card">
-        <div class="lbl">👁 দর্শক</div>
-        <div class="val" id="viewers">0</div>
-      </div>
-    </div>
+    <div class="link-list" id="userLinkList"></div>
+    <p style="font-size:12px;color:var(--text2);margin-top:4px;">🔹 যোগ করা লিংক স্বয়ংক্রিয়ভাবে স্ট্রিম সুইচারে যুক্ত হবে।</p>
   </div>
-</section>
-
-<!-- RELATED MATCHES -->
-<section class="section reveal" id="matches">
-  <h2>আরও ম্যাচ</h2>
-  <div class="grid" id="matchGrid"></div>
 </section>
 
 <!-- FOOTER -->
 <footer class="reveal">
-  <div class="brand">NSP <b>FIFA WORLD CUP</b> LIVE</div>
+  <div class="brand">NSP <b>SPORTS</b> LIVE</div>
   <p>Designed &amp; Engineered by <b>Salman Farshi</b></p>
   <div class="foot-links">
     <a href="https://www.facebook.com/salmanfarshi.nsp" target="_blank">📘 Facebook</a>
@@ -385,45 +378,35 @@ footer p{color:var(--text2);font-size:13px;margin-bottom:14px}
 <nav class="bottom-nav">
   <a href="#home" class="active"><span class="i">🏠</span>হোম</a>
   <a href="#player"><span class="i">📺</span>লাইভ</a>
-  <a href="#matches"><span class="i">⚽</span>ম্যাচ</a>
+  <a href="#linkpanel"><span class="i">➕</span>চ্যানেল</a>
   <a href="#" onclick="shareSite();return false;"><span class="i">📤</span>শেয়ার</a>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ================= CONFIG ================= */
-const CONFIG = {
-  autoPlay: true,
-  autoRetry: true,
-  showSwitcher: true,
-  matchTime: null, // e.g. "2026-06-25T21:00:00" -> shows countdown. null = LIVE
-  streams: [
-    { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live:true },
-    { name: "Bein Sports 1 (Backup)", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", live:true },
-    { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live:true },
-    { name: "T Sports", url: "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/130714.ts", live:true }
-  ]
-};
-
-const relatedMatches = [
-  { e:"🏆", t:"France vs Spain", s:"FIFA World Cup", live:true },
-  { e:"⚽", t:"Germany vs Italy", s:"FIFA World Cup", live:false },
-  { e:"🥅", t:"Portugal vs England", s:"Semi Final", live:true },
-  { e:"🎯", t:"Netherlands vs Croatia", s:"Quarter Final", live:false },
+/* ===== CONFIG ===== */
+const DEFAULT_STREAMS = [
+  { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live:true },
+  { name: "Bein Sports 1 (ব্যাকআপ)", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", live:true },
+  { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live:true },
+  { name: "T Sports", url: "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/130714.ts", live:true }
 ];
 
-/* ================= ELEMENTS ================= */
+/* ===== STATE ===== */
+let streams = [...DEFAULT_STREAMS];
+let currentStream = 0;
+let retryCount = 0;
+const MAX_RETRY = 2;
+let hls = null;
 const video = document.getElementById('video');
 const spinner = document.getElementById('spinner');
 const spinnerText = document.getElementById('spinnerText');
 const errorOverlay = document.getElementById('errorOverlay');
 const switcher = document.getElementById('switcher');
-let hls = null, currentStream = 0, retryCount = 0;
-const MAX_RETRY = 2;
-
-/* ================= TOAST ================= */
 let toastTimer;
+
+/* ===== TOAST ===== */
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -431,24 +414,23 @@ function toast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'),2600);
 }
 
-/* ================= STREAM SWITCHER UI ================= */
+/* ===== BUILD SWITCHER ===== */
 function buildSwitcher(){
-  if(!CONFIG.showSwitcher){ switcher.style.display='none'; return; }
   switcher.innerHTML = '';
-  CONFIG.streams.forEach((s,i)=>{
+  streams.forEach((s,i)=>{
     const b = document.createElement('button');
-    b.className = 'stream-btn'+(i===currentStream?' active':'');
-    b.innerHTML = (s.live?'<span class="live-mini"></span>':'') + s.name;
-    b.onclick = ()=>{ loadStream(i,true); };
+    b.className = 'stream-btn' + (i===currentStream ? ' active' : '');
+    b.innerHTML = (s.live ? '<span class="live-mini"></span>' : '') + s.name;
+    b.onclick = ()=> loadStream(i, true);
     switcher.appendChild(b);
   });
 }
 function markActive(){
-  [...switcher.children].forEach((b,i)=>b.classList.toggle('active',i===currentStream));
+  [...switcher.children].forEach((b,i)=> b.classList.toggle('active', i===currentStream));
 }
 
-/* ================= PLAYER STATE ================= */
-function showSpinner(txt){ spinnerText.textContent = txt||'স্ট্রিম লোড হচ্ছে...'; spinner.classList.add('active'); errorOverlay.classList.remove('active'); }
+/* ===== SPINNER / ERROR ===== */
+function showSpinner(txt){ spinnerText.textContent = txt || 'স্ট্রিম লোড হচ্ছে...'; spinner.classList.add('active'); errorOverlay.classList.remove('active'); }
 function hideSpinner(){ spinner.classList.remove('active'); }
 function showError(txt){
   hideSpinner();
@@ -457,15 +439,15 @@ function showError(txt){
 }
 function hideError(){ errorOverlay.classList.remove('active'); }
 
-/* ================= LOAD STREAM ================= */
+/* ===== LOAD STREAM ===== */
 function loadStream(index, manual){
-  if(index<0 || index>=CONFIG.streams.length){ return; }
+  if(index<0 || index>=streams.length) return;
   currentStream = index;
   retryCount = 0;
   markActive();
   hideError();
   showSpinner('স্ট্রিম লোড হচ্ছে...');
-  const src = CONFIG.streams[index].url;
+  const src = streams[index].url;
 
   if(hls){ hls.destroy(); hls=null; }
 
@@ -475,166 +457,173 @@ function loadStream(index, manual){
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
       hideSpinner();
-      if(CONFIG.autoPlay) video.play().catch(()=>{});
+      video.play().catch(()=>{});
       updateQuality();
     });
-    hls.on(Hls.Events.ERROR,(evt,data)=>{
-      if(data.fatal){ handleStreamFail(); }
+    hls.on(Hls.Events.ERROR, (evt, data)=>{
+      if(data.fatal) handleStreamFail();
     });
   } else if(video.canPlayType('application/vnd.apple.mpegurl')){
     video.src = src;
-    video.addEventListener('loadedmetadata',()=>{
+    video.addEventListener('loadedmetadata', ()=>{
       hideSpinner();
-      if(CONFIG.autoPlay) video.play().catch(()=>{});
-    },{once:true});
-    video.addEventListener('error',handleStreamFail,{once:true});
+      video.play().catch(()=>{});
+    }, {once:true});
+    video.addEventListener('error', handleStreamFail, {once:true});
   } else {
     showError('আপনার ব্রাউজার এই স্ট্রিম সাপোর্ট করে না।');
   }
-  if(manual) toast('চ্যানেল: '+CONFIG.streams[index].name);
+  if(manual) toast('চ্যানেল: '+streams[index].name);
 }
 
-/* ================= FALLBACK LOGIC ================= */
+/* ===== FAIL / RETRY ===== */
 function handleStreamFail(){
   setConn('weak');
-  if(CONFIG.autoRetry && retryCount < MAX_RETRY){
+  if(retryCount < MAX_RETRY){
     retryCount++;
-    showSpinner('আবার চেষ্টা করা হচ্ছে... ('+retryCount+')');
-    setTimeout(()=>loadStream(currentStream,false), 1500);
+    showSpinner('আবার চেষ্টা ('+retryCount+')');
+    setTimeout(()=> loadStream(currentStream, false), 1500);
     return;
   }
-  // try next backup stream
-  if(currentStream < CONFIG.streams.length-1){
+  if(currentStream < streams.length-1){
     showSpinner('ব্যাকআপ স্ট্রিমে যাচ্ছে...');
-    setTimeout(()=>loadStream(currentStream+1,false), 1200);
+    setTimeout(()=> loadStream(currentStream+1, false), 1200);
   } else {
     setConn('off');
-    showError('সবগুলো স্ট্রিম এই মুহূর্তে উপলব্ধ নেই। কিছুক্ষণ পর আবার চেষ্টা করুন।');
+    showError('সবগুলো স্ট্রিম বর্তমানে উপলব্ধ নেই। লিংক যোগ করে দেখুন।');
   }
 }
 function retryStream(){
   setConn('good');
-  loadStream(0,false);
+  loadStream(0, false);
   toast('স্ট্রিম রিফ্রেশ করা হচ্ছে...');
 }
 
-/* ================= QUALITY / CONNECTION ================= */
+/* ===== QUALITY / CONN ===== */
 function setConn(state){
   const dot = document.getElementById('connDot');
   const txt = document.getElementById('connText');
   dot.className = 'conn-dot';
-  if(state==='good'){ txt.textContent='কানেকশন: ভালো'; }
-  else if(state==='weak'){ dot.classList.add('weak'); txt.textContent='কানেকশন: দুর্বল'; }
-  else { dot.classList.add('off'); txt.textContent='কানেকশন: অফলাইন'; }
+  if(state==='good'){ txt.textContent='সংযোগ: ভালো'; }
+  else if(state==='weak'){ dot.classList.add('weak'); txt.textContent='সংযোগ: দুর্বল'; }
+  else { dot.classList.add('off'); txt.textContent='সংযোগ: অফলাইন'; }
 }
 function updateQuality(){
-  const q = document.getElementById('qualityText');
-  q.textContent = video.videoHeight>=720?'HD':(video.videoHeight>0?'SD':'HD');
+  document.getElementById('qualityText').textContent = video.videoHeight>=720 ? 'HD' : (video.videoHeight>0 ? 'SD' : 'HD');
 }
-video.addEventListener('playing',()=>{ hideSpinner(); setConn('good'); updateQuality(); });
-video.addEventListener('waiting',()=>{ showSpinner('বাফার হচ্ছে...'); });
+video.addEventListener('playing', ()=>{ hideSpinner(); setConn('good'); updateQuality(); });
+video.addEventListener('waiting', ()=> showSpinner('বাফার হচ্ছে...'));
 
-/* ================= CUSTOM CONTROLS ================= */
+/* ===== CONTROLS ===== */
 const playBtn=document.getElementById('playBtn');
 const muteBtn=document.getElementById('muteBtn');
 const volRange=document.getElementById('volRange');
 const fsBtn=document.getElementById('fsBtn');
 const pipBtn=document.getElementById('pipBtn');
 
-playBtn.onclick=()=>{ video.paused?video.play():video.pause(); };
-video.addEventListener('play',()=>playBtn.textContent='⏸');
-video.addEventListener('pause',()=>playBtn.textContent='▶');
-muteBtn.onclick=()=>{ video.muted=!video.muted; muteBtn.textContent=video.muted?'🔇':'🔊'; volRange.value=video.muted?0:video.volume; };
-volRange.oninput=()=>{ video.volume=volRange.value; video.muted=(volRange.value==0); muteBtn.textContent=video.muted?'🔇':'🔊'; };
-fsBtn.onclick=()=>{ const box=document.querySelector('.video-box'); if(!document.fullscreenElement){ (box.requestFullscreen||box.webkitRequestFullscreen).call(box); } else { document.exitFullscreen(); } };
-pipBtn.onclick=async()=>{ try{ if(document.pictureInPictureElement){ await document.exitPictureInPicture(); } else { await video.requestPictureInPicture(); } }catch(e){ toast('PiP সাপোর্ট করছে না'); } };
+playBtn.onclick = ()=> video.paused ? video.play() : video.pause();
+video.addEventListener('play', ()=> playBtn.textContent='⏸');
+video.addEventListener('pause', ()=> playBtn.textContent='▶');
+muteBtn.onclick = ()=>{
+  video.muted = !video.muted;
+  muteBtn.textContent = video.muted ? '🔇' : '🔊';
+  volRange.value = video.muted ? 0 : video.volume;
+};
+volRange.oninput = ()=>{
+  video.volume = volRange.value;
+  video.muted = (volRange.value==0);
+  muteBtn.textContent = video.muted ? '🔇' : '🔊';
+};
+fsBtn.onclick = ()=>{
+  const box = document.querySelector('.video-box');
+  if(!document.fullscreenElement){
+    (box.requestFullscreen || box.webkitRequestFullscreen).call(box);
+  } else { document.exitFullscreen(); }
+};
+pipBtn.onclick = async ()=>{
+  try {
+    if(document.pictureInPictureElement) await document.exitPictureInPicture();
+    else await video.requestPictureInPicture();
+  } catch(e){ toast('PiP সাপোর্ট করছে না'); }
+};
 
-/* ================= SHARE / COPY ================= */
+/* ===== SHARE / COPY ===== */
 function shareSite(){
-  const data={ title:'NSP FIFA WORLD CUP LIVE', text:'Argentina vs Brazil সরাসরি দেখুন!', url:location.href };
-  if(navigator.share){ navigator.share(data).catch(()=>{}); }
-  else { copyLink(); }
+  const data = { title:'NSP SPORTS LIVE', text:'স্পোর্টস লাইভ স্ট্রিম দেখুন!', url:location.href };
+  if(navigator.share) navigator.share(data).catch(()=>{});
+  else copyLink();
 }
 function copyLink(){
-  navigator.clipboard.writeText(location.href).then(()=>toast('লিংক কপি হয়েছে ✅')).catch(()=>toast('কপি করা যায়নি'));
+  navigator.clipboard.writeText(location.href)
+    .then(()=> toast('লিংক কপি হয়েছে ✅'))
+    .catch(()=> toast('কপি করা যায়নি'));
 }
-function scrollToPlayer(){ document.getElementById('player').scrollIntoView({behavior:'smooth'}); if(video.paused&&video.readyState>2) video.play().catch(()=>{}); }
+function scrollToPlayer(){ document.getElementById('player').scrollIntoView({behavior:'smooth'}); if(video.paused && video.readyState>2) video.play().catch(()=>{}); }
 
-/* ================= BANGLADESH CLOCK ================= */
-function bdClock(){
-  const now=new Date();
-  const bd=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Dhaka'}));
-  const p=n=>String(n).padStart(2,'0');
-  document.getElementById('bdClock').textContent=p(bd.getHours())+':'+p(bd.getMinutes())+':'+p(bd.getSeconds());
+/* ===== ADD USER STREAM ===== */
+function addUserStream(){
+  const urlInput = document.getElementById('newLinkInput');
+  const nameInput = document.getElementById('newLinkName');
+  const url = urlInput.value.trim();
+  if(!url){ toast('লিংক দিন'); return; }
+  const name = nameInput.value.trim() || 'ব্যবহারকারীর স্ট্রিম';
+  // check duplicate
+  if(streams.some(s=> s.url === url)){ toast('এই লিংক আগে থেকেই আছে'); return; }
+  streams.push({ name, url, live:true });
+  buildSwitcher();
+  // optionally load it
+  loadStream(streams.length-1, true);
+  urlInput.value = '';
+  nameInput.value = '';
+  renderUserLinks();
+  toast('✅ চ্যানেল যোগ হয়েছে');
 }
-setInterval(bdClock,1000); bdClock();
-
-/* ================= COUNTDOWN ================= */
-function countdown(){
-  const el=document.getElementById('countdown');
-  if(!CONFIG.matchTime){ el.textContent='🔴 LIVE'; return; }
-  const diff=new Date(CONFIG.matchTime)-new Date();
-  if(diff<=0){ el.textContent='🔴 LIVE'; return; }
-  const h=Math.floor(diff/3.6e6), m=Math.floor(diff%3.6e6/6e4), s=Math.floor(diff%6e4/1000);
-  const p=n=>String(n).padStart(2,'0');
-  el.textContent=p(h)+':'+p(m)+':'+p(s);
-}
-setInterval(countdown,1000); countdown();
-
-/* ================= VIEWER COUNTER ================= */
-let viewers=Math.floor(12000+Math.random()*8000);
-function updateViewers(){
-  viewers+=Math.floor(Math.random()*60-25);
-  if(viewers<8000)viewers=8000;
-  document.getElementById('viewers').textContent=viewers.toLocaleString('en-US');
-}
-updateViewers(); setInterval(updateViewers,3000);
-
-/* ================= RELATED MATCHES ================= */
-function buildMatches(){
-  const g=document.getElementById('matchGrid');
-  // skeleton first
-  g.innerHTML = Array(4).fill('<div class="match-card"><div class="card-thumb skeleton"></div><div class="card-body"><h4 class="skeleton" style="height:14px;border-radius:6px"></h4><p class="skeleton" style="height:12px;margin-top:8px;border-radius:6px"></p></div></div>').join('');
-  setTimeout(()=>{
-    g.innerHTML='';
-    relatedMatches.forEach(m=>{
-      const c=document.createElement('div');
-      c.className='match-card';
-      c.innerHTML=`
-        <div class="card-thumb">
-          ${m.live?'<span class="lv"><span class="dot"></span>LIVE</span>':'<span class="up">UPCOMING</span>'}
-          ${m.e}
-        </div>
-        <div class="card-body"><h4>${m.t}</h4><p>${m.s}</p></div>`;
-      c.onclick=()=>{ scrollToPlayer(); toast('লোড হচ্ছে: '+m.t); };
-      g.appendChild(c);
-    });
-  },900);
+function renderUserLinks(){
+  const container = document.getElementById('userLinkList');
+  container.innerHTML = '';
+  // show only user-added (after default)
+  for(let i=DEFAULT_STREAMS.length; i<streams.length; i++){
+    const s = streams[i];
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${s.name} <button data-idx="${i}" class="del-link">✕</button>`;
+    chip.querySelector('.del-link').onclick = (e)=>{
+      const idx = parseInt(e.target.dataset.idx);
+      streams.splice(idx, 1);
+      if(currentStream >= streams.length) currentStream = streams.length-1;
+      if(currentStream < 0) currentStream = 0;
+      buildSwitcher();
+      renderUserLinks();
+      if(streams.length>0) loadStream(currentStream, false);
+      else { showError('কোন চ্যানেল নেই। লিংক যোগ করুন।'); }
+      toast('চ্যানেল মুছে ফেলা হয়েছে');
+    };
+    container.appendChild(chip);
+  }
 }
 
-/* ================= SCROLL REVEAL ================= */
-const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }),{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* ===== SCROLL REVEAL ===== */
+const io = new IntersectionObserver(es=> es.forEach(e=> { if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
 
-/* ================= NAV ACTIVE STATE ================= */
+/* ===== NAV ACTIVE ===== */
 document.querySelectorAll('nav.top a, .bottom-nav a').forEach(a=>{
-  a.addEventListener('click',function(){
-    if(this.getAttribute('href')==='#') return;
+  a.addEventListener('click', function(){
     document.querySelectorAll('nav.top a').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.bottom-nav a').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
   });
 });
 
-/* ================= ONLINE / OFFLINE ================= */
-window.addEventListener('offline',()=>{ setConn('off'); toast('ইন্টারনেট সংযোগ বিচ্ছিন্ন'); });
-window.addEventListener('online',()=>{ setConn('good'); toast('আবার অনলাইনে'); retryStream(); });
+/* ===== ONLINE / OFFLINE ===== */
+window.addEventListener('offline', ()=>{ setConn('off'); toast('ইন্টারনেট বিচ্ছিন্ন'); });
+window.addEventListener('online', ()=>{ setConn('good'); toast('অনলাইনে'); retryStream(); });
 
-/* ================= INIT ================= */
-window.addEventListener('load',()=>{
+/* ===== INIT ===== */
+window.addEventListener('load', ()=>{
   buildSwitcher();
-  buildMatches();
-  loadStream(0,false);
-  if(CONFIG.autoPlay) video.muted=false;
+  renderUserLinks();
+  loadStream(0, false);
 });
 </script>
 </body>
