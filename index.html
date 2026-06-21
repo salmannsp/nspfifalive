@@ -25,11 +25,9 @@
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%}
 
-    /* scroll */
     ::-webkit-scrollbar{height:6px;width:6px}
     ::-webkit-scrollbar-thumb{background:var(--hover);border-radius:10px}
 
-    /* animations */
     @keyframes pulse{0%{transform:scale(.95);opacity:.7}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.95);opacity:.7}}
     @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,229,255,.4)}50%{box-shadow:0 0 22px rgba(0,229,255,.8)}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
@@ -40,7 +38,6 @@
     .reveal{opacity:0}
     .reveal.show{animation:fadeUp .7s ease forwards}
 
-    /* header */
     header{
       position:sticky;top:0;z-index:100;
       display:flex;align-items:center;justify-content:space-between;
@@ -68,7 +65,6 @@
     .live-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--error);animation:pulse 1.3s infinite}
     @media(max-width:760px){nav.top{display:none}}
 
-    /* hero */
     .hero{
       position:relative;margin:16px;border-radius:22px;overflow:hidden;
       min-height:200px;display:flex;align-items:center;
@@ -100,12 +96,10 @@
     .btn-ghost:hover{background:var(--hover)}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 
-    /* sections */
     .section{padding:10px 18px 30px}
     .section h2{font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
     .section h2::before{content:"";width:5px;height:22px;border-radius:6px;background:var(--accent)}
 
-    /* player */
     .player-wrap{
       background:var(--card);border:1px solid rgba(255,255,255,.06);
       border-radius:20px;overflow:hidden;
@@ -123,7 +117,6 @@
     .error-overlay h3{color:var(--error)}
     .error-overlay p{color:var(--text2);font-size:14px;max-width:340px}
 
-    /* controls */
     .controls{
       display:flex;align-items:center;gap:10px;padding:10px 14px;
       background:linear-gradient(0deg,var(--card),rgba(28,36,64,.6));flex-wrap:wrap;
@@ -144,7 +137,6 @@
     .conn-dot.weak{background:var(--warn)}
     .conn-dot.off{background:var(--error)}
 
-    /* switcher */
     .switcher{display:flex;gap:10px;padding:14px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.05)}
     .stream-btn{
       background:var(--hover);border:1px solid rgba(255,255,255,.08);color:var(--text2);
@@ -155,11 +147,9 @@
     .stream-btn.active{background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;border-color:transparent}
     .stream-btn .live-mini{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
 
-    /* extra */
     .extra-actions{display:flex;gap:10px;padding:0 14px 16px;flex-wrap:wrap}
     .extra-actions .btn-ghost{padding:8px 16px;font-size:13px;border-radius:10px}
 
-    /* add link panel */
     .add-link-panel{
       margin-top:20px;
       background:var(--card);
@@ -225,7 +215,6 @@
     }
     .link-list .chip button:hover{transform:scale(1.2)}
 
-    /* bottom nav */
     .bottom-nav{
       position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;
       justify-content:space-around;padding:8px 6px;
@@ -237,7 +226,6 @@
     .bottom-nav a .i{font-size:19px}
     @media(max-width:760px){.bottom-nav{display:flex}}
 
-    /* toast */
     .toast{
       position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);
       background:var(--hover);border:1px solid var(--accent);color:var(--text);
@@ -246,7 +234,6 @@
     }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* footer */
     footer{
       margin:30px 18px;padding:26px;border-radius:20px;text-align:center;
       background:var(--card);border:1px solid rgba(255,255,255,.06);
@@ -263,7 +250,6 @@
     .badge{margin-top:16px;font-size:11px;color:var(--text2)}
     .badge span{color:var(--accent)}
 
-    /* pc/laptop fix – wider player */
     @media(min-width:1024px){
       .section{padding:10px 40px 30px}
       .hero{margin:20px 40px}
@@ -349,7 +335,7 @@
     </div>
   </div>
 
-  <!-- ADD LINK PANEL (matches replaced) -->
+  <!-- ADD LINK PANEL -->
   <div class="add-link-panel reveal" id="linkpanel">
     <h3>➕ চ্যানেল লিংক যোগ করুন</h3>
     <div class="row">
@@ -385,12 +371,17 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===== CONFIG ===== */
+/* ===== STREAMS (হার্ডকোডেড + ইউজার অ্যাড) ===== */
 const DEFAULT_STREAMS = [
-  { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live:true },
-  { name: "Bein Sports 1 (ব্যাকআপ)", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", live:true },
-  { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live:true },
-  { name: "T Sports", url: "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/130714.ts", live:true }
+  { name: "Somoy TV", url: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8", live: true },
+  { name: "Unite8 Sports", url: "http://198.195.239.50:8095/ptv/tracks-v1a1/mono.m3u8", live: true },
+  { name: "TSN", url: "https://himelhimuishere.pages.dev/fwc2k26.m3u8", live: true },
+  { name: "Rumble Sports 1", url: "https://hugh.cdn.rumble.cloud/live/y16rq9u0/slot-13/2rvn-cv3b_1080p/chunklist_DVR.m3u8", live: true },
+  { name: "Match TV (HD)", url: "https://bl.video.matchtv.ru/media/playlist/free_d46d0cf1712c0542ec7fd4f0808f600a_hd/17_89756005/1080/e6bef86de8a133cd7b27deb040758a00/4796141934.m3u8", live: true },
+  { name: "Stream HD 94", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", live: true },
+  { name: "Stream HD 84", url: "https://1nyaler.streamhostingcdn.top/stream/84/index.m3u8", live: true },
+  { name: "Stream HD 32", url: "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8", live: true },
+  { name: "Bein Sports 3", url: "https://next.badinan.xyz/nexttv/FHD/playlist.m3u8", live: true }
 ];
 
 /* ===== STATE ===== */
@@ -567,11 +558,9 @@ function addUserStream(){
   const url = urlInput.value.trim();
   if(!url){ toast('লিংক দিন'); return; }
   const name = nameInput.value.trim() || 'ব্যবহারকারীর স্ট্রিম';
-  // check duplicate
   if(streams.some(s=> s.url === url)){ toast('এই লিংক আগে থেকেই আছে'); return; }
   streams.push({ name, url, live:true });
   buildSwitcher();
-  // optionally load it
   loadStream(streams.length-1, true);
   urlInput.value = '';
   nameInput.value = '';
@@ -581,7 +570,6 @@ function addUserStream(){
 function renderUserLinks(){
   const container = document.getElementById('userLinkList');
   container.innerHTML = '';
-  // show only user-added (after default)
   for(let i=DEFAULT_STREAMS.length; i<streams.length; i++){
     const s = streams[i];
     const chip = document.createElement('div');
