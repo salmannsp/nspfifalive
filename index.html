@@ -1,370 +1,193 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NSP Live TV</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSP Live TV – Premium OTT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{
-      --bg:#0B0F19; --card:#151B2D; --hover:#1C2440;
-      --accent:#00E5FF; --live:#00FF88; --warn:#FFD700;
-      --error:#FF4D4D; --text:#FFFFFF; --text2:#AAB2C8;
-    }
-    html{scroll-behavior:smooth;height:100%}
-    body{
-      background:var(--bg);color:var(--text);
-      font-family:'Hind Siliguri','Poppins',sans-serif;
-      overflow-x:hidden;padding-bottom:70px;
-      min-height:100vh;
-    }
+    :root{--bg:#080B14;--card:#121827;--card2:#1A2336;--accent:#00E5FF;--accent2:#00A3FF;--live:#FF3B30;--success:#00FF88;--warning:#FFD700;--text:#FFFFFF;--text2:#A7B1C2;--radius:24px;--shadow:0 20px 60px rgba(0,0,0,0.7)}
+    html{scroll-behavior:smooth;height:100%;background:var(--bg)}
+    body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri','Poppins',sans-serif;overflow-x:hidden;min-height:100vh;padding-bottom:0}
     ::selection{background:var(--accent);color:#000}
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--card2);border-radius:10px}
 
-    ::-webkit-scrollbar{height:6px;width:6px}
-    ::-webkit-scrollbar-thumb{background:var(--hover);border-radius:10px}
-
-    @keyframes pulse{0%{transform:scale(.95);opacity:.7}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.95);opacity:.7}}
-    @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,229,255,.4)}50%{box-shadow:0 0 22px rgba(0,229,255,.8)}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%{transform:scale(0.95);opacity:0.6}50%{transform:scale(1.1);opacity:1}100%{transform:scale(0.95);opacity:0.6}}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes blink{50%{opacity:.3}}
-
-    .reveal{opacity:0}
-    .reveal.show{animation:fadeUp .7s ease forwards}
+    @keyframes glowPulse{0%,100%{box-shadow:0 0 10px rgba(0,229,255,0.3)}50%{box-shadow:0 0 30px rgba(0,229,255,0.7)}}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease}
+    .reveal.show{opacity:1;transform:translateY(0)}
 
     /* HEADER */
-    header{
-      position:sticky;top:0;z-index:100;
-      display:flex;align-items:center;justify-content:space-between;
-      padding:10px 16px;
-      background:rgba(11,15,25,.8);
-      backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(255,255,255,.06);
-      flex-wrap:wrap;
-      gap:6px 12px;
-    }
-    .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
-    .logo .ball{
-      width:34px;height:34px;border-radius:50%;
-      background:radial-gradient(circle at 30% 30%,var(--accent),#0077aa);
-      display:grid;place-items:center;font-size:18px;
-      animation:glow 2.6s infinite;
-    }
+    header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:8px 24px;background:rgba(8,11,20,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05)}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
+    .logo .icon{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:18px;color:#000;animation:glowPulse 3s infinite}
     .logo span b{color:var(--accent)}
-    nav.top{display:flex;gap:20px;align-items:center}
-    nav.top a{
-      color:var(--text2);font-size:14px;font-weight:500;
-      padding:6px 0;border-bottom:2px solid transparent;
-      transition:.25s;cursor:pointer;
-    }
-    nav.top a:hover,nav.top a.active{
-      color:var(--accent);
-      border-bottom-color:var(--accent);
-    }
-    .live-badge{
-      display:flex;align-items:center;gap:6px;
-      background:rgba(255,77,77,.12);border:1px solid var(--error);
-      padding:4px 12px;border-radius:30px;font-size:12px;font-weight:600;color:var(--error);
-    }
-    .live-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--error);animation:pulse 1.3s infinite}
-    @media(max-width:760px){nav.top{display:none}}
+    nav.top{display:flex;gap:28px;align-items:center}
+    nav.top a{color:var(--text2);font-size:14px;font-weight:500;padding:6px 0;border-bottom:2px solid transparent;transition:0.25s;cursor:pointer;position:relative}
+    nav.top a:hover,nav.top a.active{color:var(--text);border-bottom-color:var(--accent)}
+    nav.top a.active::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:var(--accent)}
+    .live-indicator{display:flex;align-items:center;gap:8px;background:rgba(255,59,48,0.12);border:1px solid var(--live);padding:4px 14px;border-radius:40px;font-size:12px;font-weight:600;color:var(--live)}
+    .live-indicator .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.2s infinite}
 
     /* HERO */
-    .hero{
-      margin:12px 16px;border-radius:18px;overflow:hidden;
-      background:linear-gradient(120deg,rgba(11,15,25,.95) 10%,rgba(11,15,25,.4) 60%,rgba(0,229,255,.12)),
-                 radial-gradient(circle at 80% 20%,rgba(0,229,255,.25),transparent 50%),
-                 var(--card);
-      border:1px solid rgba(255,255,255,.06);
-      padding:14px 20px;
-      display:flex;
-      align-items:center;
-      min-height:80px;
-    }
+    .hero{margin:16px 24px;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,rgba(8,11,20,0.92),rgba(8,11,20,0.4)),linear-gradient(135deg,var(--accent2),transparent 60%);border:1px solid rgba(255,255,255,0.05);padding:24px 32px;display:flex;align-items:center;min-height:100px;backdrop-filter:blur(4px)}
     .hero-content{max-width:600px}
-    .hero .tag{
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(0,255,136,.12);color:var(--live);
-      border:1px solid var(--live);padding:3px 12px;border-radius:30px;
-      font-size:11px;font-weight:600;margin-bottom:6px;
-    }
-    .hero .tag .dot{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
-    .hero h1{font-size:clamp(18px,3vw,26px);line-height:1.2}
-    .hero h1 .vs{color:var(--warn)}
-    .hero p{color:var(--text2);font-size:13px;margin:4px 0 10px}
-    .btn{
-      cursor:pointer;border:none;font-family:inherit;font-weight:600;
-      border-radius:10px;transition:.25s;display:inline-flex;align-items:center;gap:6px;
-    }
-    .btn-primary{
-      background:linear-gradient(135deg,var(--accent),#0099cc);color:#06121a;
-      padding:8px 18px;font-size:13px;animation:glow 3s infinite;
-    }
-    .btn-primary:hover{transform:translateY(-2px) scale(1.02)}
-    .btn-ghost{background:rgba(255,255,255,.07);color:var(--text);padding:8px 14px;border:1px solid rgba(255,255,255,.1)}
-    .btn-ghost:hover{background:var(--hover)}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .hero .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,0.12);color:var(--success);border:1px solid var(--success);padding:4px 16px;border-radius:40px;font-size:12px;font-weight:600;margin-bottom:8px}
+    .hero .tag .dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 1.3s infinite}
+    .hero h1{font-size:clamp(22px,3.2vw,34px);line-height:1.2}
+    .hero h1 .vs{color:var(--warning)}
+    .hero p{color:var(--text2);font-size:14px;margin:6px 0 14px}
+    .btn{cursor:pointer;border:none;font-family:inherit;font-weight:600;border-radius:12px;transition:0.3s;display:inline-flex;align-items:center;gap:8px;padding:10px 24px;font-size:14px}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06121a;box-shadow:0 4px 20px rgba(0,229,255,0.3)}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,229,255,0.5)}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid rgba(255,255,255,0.08)}
+    .btn-ghost:hover{background:var(--card2);border-color:var(--accent)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 
-    /* SECTION */
-    .section{padding:6px 16px 24px}
-    .section h2{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-    .section h2::before{content:"";width:4px;height:18px;border-radius:4px;background:var(--accent)}
+    /* LAYOUT: Player + Sidebar */
+    .ott-layout{display:flex;gap:20px;padding:0 24px 20px}
+    .player-col{flex:1;min-width:0}
+    .sidebar-col{width:340px;flex-shrink:0;display:flex;flex-direction:column;max-height:calc(100vh - 120px);position:sticky;top:80px}
+    @media(max-width:1024px){.sidebar-col{display:none}.ott-layout{padding:0 16px 20px}}
+    @media(max-width:768px){.ott-layout{padding:0 12px 20px}.hero{margin:12px;padding:16px 20px}.hero h1{font-size:20px}}
 
-    /* PLAYER WRAP */
-    .player-wrap{
-      background:var(--card);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      overflow:hidden;
-    }
-    .video-box{
-      position:relative;
-      background:#000;
-      width:100%;
-      height:auto;
-      max-height:75vh;
-      overflow:hidden;
-    }
-    #video{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      background:#000;
-      display:block;
-    }
-    .spinner-overlay,.error-overlay{
-      position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-      gap:12px;background:rgba(11,15,25,.85);text-align:center;padding:16px;z-index:5;
-    }
+    /* PLAYER */
+    .player-wrap{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,0.06);box-shadow:var(--shadow)}
+    .video-box{position:relative;background:#000;width:100%;aspect-ratio:16/9;max-height:70vh;overflow:hidden}
+    #video{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+    .spinner-overlay,.error-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(8,11,20,0.88);text-align:center;padding:24px;z-index:5;backdrop-filter:blur(6px)}
     .spinner-overlay.active,.error-overlay.active{display:flex}
-    .spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
-    .spinner-overlay p{color:var(--text2);font-size:13px}
-    .error-overlay .ic{font-size:40px}
-    .error-overlay h3{color:var(--error);font-size:18px}
-    .error-overlay p{color:var(--text2);font-size:13px;max-width:320px}
+    .spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,0.08);border-top-color:var(--accent);border-radius:50%;animation:spin 0.9s linear infinite}
+    .spinner-overlay p{color:var(--text2);font-size:14px}
+    .error-overlay .ic{font-size:44px}
+    .error-overlay h3{color:var(--live);font-size:20px}
+
+    /* PLAYER OVERLAY (info on video) */
+    .player-info-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px 24px;background:linear-gradient(0deg,rgba(0,0,0,0.8),transparent);z-index:3;display:flex;align-items:center;gap:16px;pointer-events:none}
+    .player-info-overlay .pi-logo{width:48px;height:48px;border-radius:12px;background:var(--card2);object-fit:contain;padding:6px;border:1px solid rgba(255,255,255,0.06)}
+    .player-info-overlay .pi-name{font-size:18px;font-weight:700;letter-spacing:0.3px}
+    .player-info-overlay .pi-badges{display:flex;gap:8px;margin-top:2px;flex-wrap:wrap}
+    .player-info-overlay .pi-badge{font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;text-transform:uppercase}
+    .pi-badge.live{background:var(--live);color:#fff}
+    .pi-badge.hd{background:var(--accent);color:#000}
+    .pi-badge.views{background:rgba(255,255,255,0.1);color:var(--text2);font-weight:400}
 
     /* CONTROLS */
-    .controls{
-      display:flex;align-items:center;gap:8px;padding:8px 12px;
-      background:linear-gradient(0deg,var(--card),rgba(28,36,64,.6));
-      flex-wrap:wrap;
-    }
-    .ctrl{
-      background:rgba(255,255,255,.07);border:none;color:var(--text);cursor:pointer;
-      width:36px;height:36px;border-radius:10px;font-size:16px;display:grid;place-items:center;transition:.2s;
-    }
-    .ctrl:hover{background:var(--accent);color:#06121a;transform:translateY(-2px)}
-    .vol{display:flex;align-items:center;gap:6px;flex:1;min-width:100px;max-width:160px}
-    input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:var(--hover);cursor:pointer}
+    .controls{display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--card2);flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.04)}
+    .ctrl{background:transparent;border:none;color:var(--text2);cursor:pointer;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;transition:0.2s}
+    .ctrl:hover{background:rgba(255,255,255,0.06);color:var(--text)}
+    .vol{display:flex;align-items:center;gap:8px;flex:1;min-width:80px;max-width:140px}
+    input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:var(--bg);cursor:pointer}
     input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent)}
-    .quality-ind{
-      margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);
-      background:rgba(255,255,255,.05);padding:3px 10px;border-radius:20px;
-    }
-    .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--live)}
-    .conn-dot.weak{background:var(--warn)}
-    .conn-dot.off{background:var(--error)}
+    .quality-ind{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);background:rgba(255,255,255,0.04);padding:4px 12px;border-radius:40px;margin-left:auto}
+    .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+    .conn-dot.weak{background:var(--warning)}
+    .conn-dot.off{background:var(--live)}
+    .extra-actions{display:flex;gap:6px;padding:4px 16px 12px;flex-wrap:wrap;background:var(--card);border-top:1px solid rgba(255,255,255,0.04)}
+    .extra-actions .btn-ghost{padding:4px 14px;font-size:12px;border-radius:8px}
 
-    /* CATEGORY FILTER */
-    .category-wrap{
-      padding:10px 12px 4px 12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      border-bottom:1px solid rgba(255,255,255,.05);
-    }
-    .cat-btn{
-      background:rgba(255,255,255,.06);
-      border:1px solid transparent;
-      color:var(--text2);
-      padding:4px 14px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:500;
-      cursor:pointer;
-      transition:.25s;
-      font-family:inherit;
-    }
-    .cat-btn:hover{color:var(--text);border-color:var(--accent)}
-    .cat-btn.active{
-      background:linear-gradient(135deg,var(--accent),#0099cc);
-      color:#06121a;
-      border-color:transparent;
-    }
+    /* SIDEBAR */
+    .sidebar-col .sb-search{position:relative;margin-bottom:14px}
+    .sidebar-col .sb-search input{width:100%;background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:40px;padding:10px 16px 10px 40px;font-family:inherit;color:var(--text);font-size:13px;outline:none;transition:0.25s}
+    .sidebar-col .sb-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1)}
+    .sidebar-col .sb-search .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2)}
+    .sidebar-col .sb-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;max-height:42px;overflow-y:hidden}
+    .sidebar-col .sb-cats .cat-chip{background:var(--card);border:1px solid rgba(255,255,255,0.04);color:var(--text2);padding:3px 14px;border-radius:30px;font-size:11px;font-weight:500;cursor:pointer;transition:0.2s;white-space:nowrap}
+    .sidebar-col .sb-cats .cat-chip:hover{border-color:var(--accent);color:var(--text)}
+    .sidebar-col .sb-cats .cat-chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border-color:transparent}
+    .sb-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding-right:4px}
+    .sb-list .sb-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:14px;background:transparent;transition:0.2s;cursor:pointer;border:1px solid transparent}
+    .sb-list .sb-item:hover{background:var(--card);border-color:rgba(255,255,255,0.04)}
+    .sb-list .sb-item.active{background:var(--card);border-color:var(--accent);box-shadow:0 0 20px rgba(0,229,255,0.05)}
+    .sb-list .sb-item .sbi-logo{width:40px;height:40px;border-radius:10px;background:var(--card2);flex-shrink:0;object-fit:contain;padding:4px;border:1px solid rgba(255,255,255,0.04)}
+    .sb-list .sb-item .sbi-info{flex:1;min-width:0}
+    .sb-list .sb-item .sbi-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-list .sb-item .sbi-cat{font-size:10px;color:var(--text2)}
+    .sb-list .sb-item .sbi-badge{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--live);color:#fff;flex-shrink:0}
 
-    /* SWITCHER */
-    .switcher{
-      display:flex;
-      gap:8px;
-      padding:10px 12px;
-      flex-wrap:wrap;
-      border-top:1px solid rgba(255,255,255,.05);
-      max-height:180px;
-      overflow-y:auto;
-    }
-    .stream-btn{
-      background:var(--hover);border:1px solid rgba(255,255,255,.08);color:var(--text2);
-      padding:6px 14px;border-radius:30px;font-size:12px;font-weight:500;cursor:pointer;
-      font-family:inherit;transition:.25s;display:flex;align-items:center;gap:6px;
-    }
-    .stream-btn:hover{color:var(--text);border-color:var(--accent)}
-    .stream-btn.active{
-      background:linear-gradient(135deg,var(--accent),#0099cc);
-      color:#06121a;
-      border-color:transparent;
-    }
-    .stream-btn .live-mini{width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}
+    /* OTT SECTIONS (horizontal scroll) */
+    .ott-sections{padding:0 24px 20px}
+    .ott-section{margin-bottom:28px}
+    .ott-section .sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .ott-section .sec-header h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .ott-section .sec-header h2::before{content:'';width:4px;height:18px;border-radius:4px;background:var(--accent)}
+    .ott-section .sec-header .see-all{font-size:12px;color:var(--text2);cursor:pointer;transition:0.2s}
+    .ott-section .sec-header .see-all:hover{color:var(--accent)}
+    .ott-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}
+    .ott-scroll::-webkit-scrollbar{height:4px}
+    .ott-scroll .ch-card{flex:0 0 180px;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:0.3s;scroll-snap-align:start}
+    .ott-scroll .ch-card:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+    .ott-scroll .ch-card .cc-logo{width:100%;aspect-ratio:1/1;background:var(--card2);display:flex;align-items:center;justify-content:center;padding:16px;object-fit:contain}
+    .ott-scroll .ch-card .cc-info{padding:10px 12px 12px}
+    .ott-scroll .ch-card .cc-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ott-scroll .ch-card .cc-cat{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ott-scroll .ch-card .cc-badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--live);color:#fff;margin-top:4px}
+    .ott-scroll .ch-card.now-playing{border-color:var(--success);box-shadow:0 0 0 1px var(--success)}
+    .ott-scroll .ch-card.featured{border-color:rgba(0,229,255,0.2)}
 
-    .extra-actions{
-      display:flex;gap:8px;padding:0 12px 12px;flex-wrap:wrap;
-    }
-    .extra-actions .btn-ghost{padding:6px 14px;font-size:12px;border-radius:8px}
+    @media(max-width:768px){.ott-sections{padding:0 12px 20px}.ott-scroll .ch-card{flex:0 0 140px}}
 
-    /* ADD LINK PANEL */
-    .add-link-panel{
-      margin-top:18px;
-      background:var(--card);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .add-link-panel h3{font-size:15px;display:flex;align-items:center;gap:6px}
-    .add-link-panel .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .add-link-panel input{
-      flex:1 1 200px;
-      background:var(--hover);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:30px;
-      padding:10px 16px;
-      font-family:inherit;
-      color:var(--text);
-      font-size:13px;
-      outline:none;
-      transition:.2s;
-    }
-    .add-link-panel input:focus{border-color:var(--accent)}
-    .add-link-panel .btn-sm{
-      padding:8px 18px;
-      border-radius:30px;
-      font-weight:600;
-      background:linear-gradient(135deg,var(--accent),#0099cc);
-      color:#06121a;
-      border:none;
-      cursor:pointer;
-      font-family:inherit;
-      font-size:13px;
-      transition:.25s;
-    }
-    .add-link-panel .btn-sm:hover{transform:scale(1.03)}
-    .link-list{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:4px;
-    }
-    .link-list .chip{
-      background:var(--hover);
-      border-radius:30px;
-      padding:4px 14px 4px 16px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      border:1px solid rgba(255,255,255,.06);
-    }
-    .link-list .chip button{
-      background:transparent;
-      border:none;
-      color:var(--error);
-      font-size:14px;
-      cursor:pointer;
-      line-height:1;
-      transition:.2s;
-    }
-    .link-list .chip button:hover{transform:scale(1.2)}
-
-    /* BOTTOM NAV */
-    .bottom-nav{
-      position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;
-      justify-content:space-around;padding:6px 4px;
-      background:rgba(11,15,25,.92);backdrop-filter:blur(14px);
-      border-top:1px solid rgba(255,255,255,.07);
-    }
-    .bottom-nav a{
-      display:flex;flex-direction:column;align-items:center;gap:2px;
-      font-size:9px;color:var(--text2);transition:.2s;cursor:pointer;
-    }
-    .bottom-nav a.active,.bottom-nav a:active{color:var(--accent)}
-    .bottom-nav a .i{font-size:18px}
-    @media(max-width:760px){.bottom-nav{display:flex}}
+    /* SKELETON */
+    .skeleton-card{background:var(--card);border-radius:16px;overflow:hidden;flex:0 0 180px;border:1px solid rgba(255,255,255,0.04)}
+    .skeleton-card .sk-thumb{width:100%;aspect-ratio:1/1;background:linear-gradient(100deg,var(--card2) 30%,rgba(255,255,255,0.04) 50%,var(--card2) 70%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+    .skeleton-card .sk-line{height:8px;border-radius:6px;margin:10px 12px 0;background:linear-gradient(100deg,var(--card2) 30%,rgba(255,255,255,0.04) 50%,var(--card2) 70%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+    .skeleton-card .sk-line.w60{width:60%;margin-bottom:10px}
 
     /* TOAST */
-    .toast{
-      position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
-      background:var(--hover);border:1px solid var(--accent);color:var(--text);
-      padding:8px 18px;border-radius:30px;font-size:12px;opacity:0;pointer-events:none;
-      transition:.4s;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.5);
-    }
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--card2);border:1px solid var(--accent);color:var(--text);padding:10px 24px;border-radius:40px;font-size:13px;opacity:0;pointer-events:none;transition:0.4s;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
     /* FOOTER */
-    footer{
-      margin:24px 16px;padding:20px;border-radius:16px;text-align:center;
-      background:var(--card);border:1px solid rgba(255,255,255,.06);
-    }
-    footer .brand{font-weight:700;font-size:15px;margin-bottom:4px}
+    footer{margin:20px 24px 10px;padding:24px;border-radius:var(--radius);text-align:center;background:var(--card);border:1px solid rgba(255,255,255,0.04)}
+    footer .brand{font-weight:700;font-size:16px;margin-bottom:4px}
     footer .brand b{color:var(--accent)}
-    footer p{color:var(--text2);font-size:12px;margin-bottom:10px}
-    .foot-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-    .foot-links a{
-      background:var(--hover);padding:6px 14px;border-radius:30px;font-size:12px;
-      display:flex;align-items:center;gap:5px;transition:.25s;border:1px solid rgba(255,255,255,.06);
-    }
+    footer p{color:var(--text2);font-size:13px;margin-bottom:10px}
+    .foot-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .foot-links a{background:var(--card2);padding:6px 18px;border-radius:40px;font-size:12px;display:flex;align-items:center;gap:6px;transition:0.25s;border:1px solid rgba(255,255,255,0.04)}
     .foot-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
     .badge{margin-top:12px;font-size:10px;color:var(--text2)}
     .badge span{color:var(--accent)}
 
-    @media(min-width:1024px){
-      .section{padding:6px 40px 24px}
-      .hero{margin:16px 40px;padding:16px 30px;min-height:70px}
-      footer{margin:24px 40px}
-      .controls{padding:10px 20px}
-      .switcher{padding:10px 20px}
-      .extra-actions{padding:0 20px 14px}
-      .add-link-panel{padding:20px}
-    }
-    @media(max-width:1024px) and (min-width:768px){
-      .section{padding:6px 24px 24px}
-      .hero{margin:14px 24px}
-      footer{margin:24px 24px}
-    }
-    @media(max-width:600px){
-      .hero h1{font-size:18px}
-      .hero .tag{font-size:10px}
-      .controls .ctrl{width:32px;height:32px;font-size:14px}
-      .quality-ind{font-size:10px}
-    }
+    /* Mini Player (floating) */
+    .mini-player{position:fixed;bottom:20px;right:20px;width:320px;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);box-shadow:0 12px 40px rgba(0,0,0,0.7);z-index:50;display:none;transition:0.3s}
+    .mini-player video{width:100%;aspect-ratio:16/9;background:#000}
+    .mini-player .mp-close{position:absolute;top:6px;right:8px;background:rgba(0,0,0,0.6);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:grid;place-items:center}
+    @media(max-width:768px){.mini-player{width:200px;bottom:80px;right:10px}}
+    .mini-player.show{display:block}
+
+    /* BOTTOM NAV (mobile) */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;justify-content:space-around;padding:6px 4px 8px;background:rgba(8,11,20,0.95);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.04)}
+    .bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--text2);transition:0.2s;cursor:pointer;padding:4px 12px;border-radius:12px}
+    .bottom-nav a.active,.bottom-nav a:active{color:var(--accent);background:rgba(0,229,255,0.06)}
+    .bottom-nav a .i{font-size:20px}
+    @media(max-width:768px){.bottom-nav{display:flex}}
+
+    /* misc */
+    .grid-empty{text-align:center;color:var(--text2);padding:40px 10px}
+    .muted-note{color:var(--text2);font-size:13px;padding:4px 2px}
   </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header>
-  <div class="logo"><div class="ball">📺</div><span>NSP <b>Live TV</b></span></div>
+  <div class="logo"><span class="icon">▶</span><span>NSP <b>Live</b></span></div>
   <nav class="top" id="mainNav">
-    <a class="active" data-tab="fifa">⚽ FIFA World Cup</a>
+    <a class="active" data-tab="fifa">⚽ FIFA</a>
     <a data-tab="livetv">📡 Live TV</a>
   </nav>
-  <div class="live-badge"><span class="dot"></span> LIVE</div>
+  <div class="live-indicator"><span class="dot"></span> লাইভ</div>
 </header>
 
 <!-- HERO -->
@@ -372,76 +195,68 @@
   <div class="hero-content">
     <span class="tag"><span class="dot"></span> সরাসরি সম্প্রচার</span>
     <h1 id="heroTitle">FIFA World Cup <span class="vs">·</span> লাইভ</h1>
-    <p id="heroDesc">স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে দেখুন</p>
+    <p id="heroDesc">স্পোর্টস, নিউজ ও বিনোদন – যেকোনো ডিভাইসে</p>
     <div class="hero-actions">
-      <button class="btn btn-primary" onclick="scrollToPlayer()">▶ এখনই দেখুন</button>
+      <button class="btn btn-primary" onclick="scrollToPlayer()">▶ এখন দেখুন</button>
       <button class="btn btn-ghost" onclick="shareSite()">🔗 শেয়ার</button>
     </div>
   </div>
 </section>
 
-<!-- PLAYER SECTION -->
-<section class="section reveal" id="player">
-  <h2 id="sectionTitle">সরাসরি স্ট্রিম</h2>
-  <div class="player-wrap">
-    <div class="video-box">
-      <video id="video" playsinline></video>
-      <div class="spinner-overlay active" id="spinner">
-        <div class="spinner"></div>
-        <p id="spinnerText">স্ট্রিম লোড হচ্ছে...</p>
+<!-- MAIN OTT LAYOUT -->
+<div class="ott-layout">
+  <!-- PLAYER COLUMN -->
+  <div class="player-col">
+    <div class="player-wrap">
+      <div class="video-box">
+        <video id="video" playsinline></video>
+        <!-- Player Info Overlay -->
+        <div class="player-info-overlay" id="playerInfoOverlay">
+          <img class="pi-logo" id="piLogo" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23121827'/%3E%3Ctext x='50' y='62' font-size='40' text-anchor='middle'%3E📺%3C/text%3E%3C/svg%3E" alt="">
+          <div>
+            <div class="pi-name" id="piName">NSP Live</div>
+            <div class="pi-badges">
+              <span class="pi-badge live">লাইভ</span>
+              <span class="pi-badge hd">HD</span>
+              <span class="pi-badge views" id="piViews">12.4K দেখছেন</span>
+            </div>
+          </div>
+        </div>
+        <div class="spinner-overlay active" id="spinner"><div class="spinner"></div><p id="spinnerText">স্ট্রিম লোড হচ্ছে...</p></div>
+        <div class="error-overlay" id="errorOverlay"><div class="ic">📡</div><h3>স্ট্রিম পাওয়া যায়নি</h3><p id="errorText">অন্য চ্যানেল নির্বাচন করুন</p><button class="btn btn-primary" onclick="retryStream()">🔄 আবার চেষ্টা</button></div>
       </div>
-      <div class="error-overlay" id="errorOverlay">
-        <div class="ic">📡</div>
-        <h3>স্ট্রিম পাওয়া যায়নি</h3>
-        <p id="errorText">দুঃখিত, এই মুহূর্তে স্ট্রিম উপলব্ধ নেই। অন্য চ্যানেল নির্বাচন করুন বা লিংক যোগ করুন।</p>
-        <button class="btn btn-primary" onclick="retryStream()">🔄 আবার চেষ্টা</button>
+      <!-- Controls -->
+      <div class="controls">
+        <button class="ctrl" id="playBtn">▶</button>
+        <button class="ctrl" id="muteBtn">🔊</button>
+        <div class="vol"><input type="range" id="volRange" min="0" max="1" step="0.01" value="1"></div>
+        <button class="ctrl" id="pipBtn">🗔</button>
+        <button class="ctrl" id="fsBtn">⛶</button>
+        <div class="quality-ind"><span class="conn-dot" id="connDot"></span><span id="connText">সংযোগ: ভালো</span> · <span id="qualityText">HD</span></div>
       </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <button class="ctrl" id="playBtn">▶</button>
-      <button class="ctrl" id="muteBtn">🔊</button>
-      <div class="vol"><input type="range" id="volRange" min="0" max="1" step="0.01" value="1"></div>
-      <button class="ctrl" id="pipBtn">🗔</button>
-      <button class="ctrl" id="fsBtn">⛶</button>
-      <div class="quality-ind">
-        <span class="conn-dot" id="connDot"></span>
-        <span id="connText">সংযোগ: ভালো</span> · <span id="qualityText">HD</span>
+      <div class="extra-actions">
+        <button class="btn btn-ghost" onclick="retryStream()">🔄 রিফ্রেশ</button>
+        <button class="btn btn-ghost" onclick="copyLink()">📋 লিংক কপি</button>
+        <button class="btn btn-ghost" onclick="shareSite()">📤 শেয়ার</button>
       </div>
-    </div>
-
-    <!-- Category Filter (only for Live TV) -->
-    <div class="category-wrap" id="categoryWrap" style="display:none;"></div>
-
-    <!-- Switcher -->
-    <div class="switcher" id="switcher"></div>
-
-    <!-- Extra Actions -->
-    <div class="extra-actions">
-      <button class="btn btn-ghost" onclick="retryStream()">🔄 রিফ্রেশ</button>
-      <button class="btn btn-ghost" onclick="copyLink()">📋 লিংক কপি</button>
-      <button class="btn btn-ghost" onclick="shareSite()">📤 শেয়ার</button>
     </div>
   </div>
 
-  <!-- ADD LINK PANEL (custom links go to FIFA tab) -->
-  <div class="add-link-panel reveal" id="linkpanel">
-    <h3>➕ চ্যানেল লিংক যোগ করুন (FIFA ট্যাবে যুক্ত হবে)</h3>
-    <div class="row">
-      <input type="text" id="newLinkInput" placeholder="http://example.com/stream.m3u8" />
-      <input type="text" id="newLinkName" placeholder="চ্যানেলের নাম (ঐচ্ছিক)" style="flex:0.7;min-width:120px;" />
-      <button class="btn-sm" onclick="addUserStream()">যোগ করুন</button>
-    </div>
-    <div class="link-list" id="userLinkList"></div>
-    <p style="font-size:11px;color:var(--text2);margin-top:4px;">🔹 যোগ করা লিংক শুধুমাত্র FIFA ট্যাবে দেখাবে।</p>
+  <!-- SIDEBAR -->
+  <div class="sidebar-col" id="sidebarCol">
+    <div class="sb-search"><span class="si">🔍</span><input type="text" id="sidebarSearch" placeholder="চ্যানেল খুঁজুন..."></div>
+    <div class="sb-cats" id="sidebarCats"></div>
+    <div class="sb-list" id="sidebarList"></div>
   </div>
-</section>
+</div>
+
+<!-- OTT SECTIONS (horizontal rows) -->
+<div class="ott-sections" id="ottSections"></div>
 
 <!-- FOOTER -->
 <footer class="reveal">
   <div class="brand">NSP <b>Live TV</b></div>
-  <p>Designed &amp; Engineered by <b>Salman Farshi</b></p>
+  <p>Designed by <b>Salman Farshi</b></p>
   <div class="foot-links">
     <a href="https://www.facebook.com/salmanfarshi.nsp" target="_blank">📘 Facebook</a>
     <a href="https://api.whatsapp.com/send?phone=8801766108822&text=" target="_blank">💬 WhatsApp</a>
@@ -454,322 +269,318 @@
 <nav class="bottom-nav" id="bottomNav">
   <a class="active" data-tab="fifa"><span class="i">⚽</span>FIFA</a>
   <a data-tab="livetv"><span class="i">📡</span>Live TV</a>
-  <a href="#linkpanel"><span class="i">➕</span>চ্যানেল</a>
   <a href="#" onclick="shareSite();return false;"><span class="i">📤</span>শেয়ার</a>
 </nav>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
-/* ============================================================
-   CONFIG & STATE
-   ============================================================ */
+<!-- MINI PLAYER -->
+<div class="mini-player" id="miniPlayer"><video id="miniVideo" playsinline></video><button class="mp-close" onclick="closeMini()">✕</button></div>
 
-// ডিফল্ট স্ট্রিম (FIFA ট্যাব)
+<script>
+// =================================================================
+// CONFIG & STATE
+// =================================================================
 const DEFAULT_STREAMS = [
-  { name: "Somoy TV", url: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8", live: true },
-  { name: "Unite8 Sports", url: "http://198.195.239.50:8095/ptv/tracks-v1a1/mono.m3u8", live: true },
-  { name: "TSN", url: "https://himelhimuishere.pages.dev/fwc2k26.m3u8", live: true },
-  { name: "Rumble Sports 1", url: "https://hugh.cdn.rumble.cloud/live/y16rq9u0/slot-13/2rvn-cv3b_1080p/chunklist_DVR.m3u8", live: true },
-  { name: "Match TV (HD)", url: "https://bl.video.matchtv.ru/media/playlist/free_d46d0cf1712c0542ec7fd4f0808f600a_hd/17_89756005/1080/e6bef86de8a133cd7b27deb040758a00/4796141934.m3u8", live: true },
-  { name: "Stream HD 94", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", live: true },
-  { name: "Stream HD 84", url: "https://1nyaler.streamhostingcdn.top/stream/84/index.m3u8", live: true },
-  { name: "Stream HD 32", url: "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8", live: true },
-  { name: "Bein Sports 3", url: "https://next.badinan.xyz/nexttv/FHD/playlist.m3u8", live: true },
-  { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live: true },
-  { name: "Bein Sports 1 (ব্যাকআপ)", url: "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", live: true },
-  { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live: true },
-  { name: "T Sports", url: "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/130714.ts", live: true }
+  { name: "Somoy TV", url: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8", live: true, logo: "", group: "News" },
+  { name: "Unite8 Sports", url: "http://198.195.239.50:8095/ptv/tracks-v1a1/mono.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "TSN", url: "https://himelhimuishere.pages.dev/fwc2k26.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Rumble Sports 1", url: "https://hugh.cdn.rumble.cloud/live/y16rq9u0/slot-13/2rvn-cv3b_1080p/chunklist_DVR.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Match TV (HD)", url: "https://bl.video.matchtv.ru/media/playlist/free_d46d0cf1712c0542ec7fd4f0808f600a_hd/17_89756005/1080/e6bef86de8a133cd7b27deb040758a00/4796141934.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Stream HD 94", url: "https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Stream HD 84", url: "https://1nyaler.streamhostingcdn.top/stream/84/index.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Bein Sports 3", url: "https://next.badinan.xyz/nexttv/FHD/playlist.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live: true, logo: "", group: "Sports" },
+  { name: "T Sports", url: "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/130714.ts", live: true, logo: "", group: "Sports" }
 ];
 
-// M3U playlist URL
-const M3U_URL = "https://github.com/abusaeeidx/Mrgify-BDIX-IPTV/raw/main/playlist.m3u";
+const M3U_URL = "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u";
+const M3U_CACHE_KEY = 'nsp_livetv_playlist_cache_v1';
+const M3U_CACHE_TTL = 30 * 60 * 1000;
+const FALLBACK_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="16" fill="#1A2336"/><text x="50" y="62" font-size="40" text-anchor="middle">📺</text></svg>');
 
-let allStreams = [...DEFAULT_STREAMS];        // FIFA ট্যাবের জন্য সব স্ট্রিম (ডিফল্ট + ইউজার)
-let liveTVChannels = [];                      // M3U থেকে পার্স করা চ্যানেল
-let categories = [];                         // ইউনিক ক্যাটাগরি লিস্ট
-let currentTab = 'fifa';                     // 'fifa' অথবা 'livetv'
-let currentStreamIndex = 0;                  // বর্তমান চ্যানেলের ইনডেক্স (সক্রিয় ট্যাবের লিস্টে)
-let retryCount = 0;
-const MAX_RETRY = 2;
+let allStreams = [...DEFAULT_STREAMS];
+let liveTVChannels = [];
+let categories = [];
+let currentTab = 'fifa';
+let currentStreamIndex = 0;
+let liveTvStreamIndex = 0;
 let hls = null;
 const video = document.getElementById('video');
+const miniVideo = document.getElementById('miniVideo');
 const spinner = document.getElementById('spinner');
 const spinnerText = document.getElementById('spinnerText');
 const errorOverlay = document.getElementById('errorOverlay');
-const switcher = document.getElementById('switcher');
-const categoryWrap = document.getElementById('categoryWrap');
 let toastTimer;
+let nowPlayingUrl = null;
+let currentFilteredList = [];
+let isFullscreen = false;
 
-/* ===== TOAST ===== */
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
-}
+// =================================================================
+// UTILITY
+// =================================================================
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+function scrollToPlayer(){ document.querySelector('.player-col').scrollIntoView({behavior:'smooth',block:'start'}); }
 
-/* ===== HELPER: সক্রিয় ট্যাবের চ্যানেল লিস্ট ===== */
-function getCurrentChannelList(){
-  if(currentTab === 'fifa') return allStreams;
-  else return liveTVChannels;
-}
-
-/* ===== BUILD SWITCHER ===== */
-function buildSwitcher(){
-  const list = getCurrentChannelList();
-  switcher.innerHTML = '';
-  if(!list || list.length===0){
-    switcher.innerHTML = '<span style="color:var(--text2);font-size:13px;">কোন চ্যানেল পাওয়া যায়নি</span>';
-    return;
-  }
-  list.forEach((s,i)=>{
-    const b = document.createElement('button');
-    b.className = 'stream-btn' + (i===currentStreamIndex ? ' active' : '');
-    b.innerHTML = (s.live ? '<span class="live-mini"></span>' : '') + s.name;
-    b.onclick = ()=> loadStream(i, true);
-    switcher.appendChild(b);
-  });
-}
-
-function markActive(){
-  const list = getCurrentChannelList();
-  const btns = switcher.querySelectorAll('.stream-btn');
-  btns.forEach((b,i)=>{
-    b.classList.toggle('active', i===currentStreamIndex && i<list.length);
-  });
-}
-
-/* ===== SPINNER / ERROR ===== */
-function showSpinner(txt){
-  spinnerText.textContent = txt || 'স্ট্রিম লোড হচ্ছে...';
-  spinner.classList.add('active');
-  errorOverlay.classList.remove('active');
-}
+// =================================================================
+// PLAYER CORE
+// =================================================================
+function showSpinner(t){ spinnerText.textContent=t||'লোড হচ্ছে...'; spinner.classList.add('active'); errorOverlay.classList.remove('active'); }
 function hideSpinner(){ spinner.classList.remove('active'); }
-function showError(txt){
-  hideSpinner();
-  if(txt) document.getElementById('errorText').textContent = txt;
-  errorOverlay.classList.add('active');
-}
+function showError(t){ hideSpinner(); if(t) document.getElementById('errorText').textContent=t; errorOverlay.classList.add('active'); }
 function hideError(){ errorOverlay.classList.remove('active'); }
+function setConn(state){ const dot=document.getElementById('connDot'), txt=document.getElementById('connText'); dot.className='conn-dot'; if(state==='good'){txt.textContent='সংযোগ: ভালো';}else if(state==='weak'){dot.classList.add('weak');txt.textContent='সংযোগ: দুর্বল';}else{dot.classList.add('off');txt.textContent='সংযোগ: অফলাইন';} }
 
-/* ===== LOAD STREAM ===== */
+function updateQuality(){ document.getElementById('qualityText').textContent = video.videoHeight>=720 ? 'HD' : (video.videoHeight>0 ? 'SD' : 'HD'); }
+video.addEventListener('playing',()=>{ hideSpinner(); setConn('good'); updateQuality(); });
+video.addEventListener('waiting',()=> showSpinner('বাফার হচ্ছে...'));
+
+// =================================================================
+// LOAD STREAMS (FIFA)
+// =================================================================
 function loadStream(index, manual){
-  const list = getCurrentChannelList();
-  if(index<0 || index>=list.length) return;
+  const list = allStreams;
+  if(index<0||index>=list.length) return;
   currentStreamIndex = index;
-  retryCount = 0;
-  markActive();
+  retryCount=0;
   hideError();
   showSpinner('স্ট্রিম লোড হচ্ছে...');
+  updateSidebarHighlight(index, 'fifa');
   const src = list[index].url;
-
   if(hls){ hls.destroy(); hls=null; }
-
   if(window.Hls && Hls.isSupported()){
-    hls = new Hls({ maxBufferLength: 30, manifestLoadingTimeOut: 12000 });
+    hls = new Hls({ maxBufferLength:30, manifestLoadingTimeOut:12000 });
     hls.loadSource(src);
     hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
-      hideSpinner();
-      video.play().catch(()=>{});
-      updateQuality();
-    });
-    hls.on(Hls.Events.ERROR, (evt, data)=>{
-      if(data.fatal) handleStreamFail();
-    });
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ hideSpinner(); video.play().catch(()=>{}); updateQuality(); updatePiInfo(list[index]); });
+    hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) handleStreamFailFifa(); });
   } else if(video.canPlayType('application/vnd.apple.mpegurl')){
     video.src = src;
-    video.addEventListener('loadedmetadata', ()=>{
-      hideSpinner();
-      video.play().catch(()=>{});
-    }, {once:true});
-    video.addEventListener('error', handleStreamFail, {once:true});
-  } else {
-    showError('আপনার ব্রাউজার এই স্ট্রিম সাপোর্ট করে না।');
-  }
-  if(manual) toast('চ্যানেল: '+list[index].name);
+    video.addEventListener('loadedmetadata', ()=>{ hideSpinner(); video.play().catch(()=>{}); updatePiInfo(list[index]); }, {once:true});
+    video.addEventListener('error', handleStreamFailFifa, {once:true});
+  } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
+  if(manual) toast('▶ '+list[index].name);
+  nowPlayingUrl = src;
+  highlightNowPlaying();
 }
 
-/* ===== FAIL / RETRY ===== */
-function handleStreamFail(){
+let retryCount=0; const MAX_RETRY=2;
+function handleStreamFailFifa(){
   setConn('weak');
-  if(retryCount < MAX_RETRY){
-    retryCount++;
-    showSpinner('আবার চেষ্টা ('+retryCount+')');
-    setTimeout(()=> loadStream(currentStreamIndex, false), 1500);
-    return;
-  }
-  const list = getCurrentChannelList();
-  if(currentStreamIndex < list.length-1){
-    showSpinner('ব্যাকআপ স্ট্রিমে যাচ্ছে...');
-    setTimeout(()=> loadStream(currentStreamIndex+1, false), 1200);
-  } else {
-    setConn('off');
-    showError('সবগুলো স্ট্রিম বর্তমানে উপলব্ধ নেই। অন্য চ্যানেল নির্বাচন করুন বা লিংক যোগ করুন।');
-  }
+  if(retryCount<MAX_RETRY){ retryCount++; showSpinner('আবার চেষ্টা ('+retryCount+')'); setTimeout(()=>loadStream(currentStreamIndex,false),1500); return; }
+  if(currentStreamIndex<allStreams.length-1){ showSpinner('পরবর্তী স্ট্রিম...'); setTimeout(()=>loadStream(currentStreamIndex+1,false),1200); }
+  else { setConn('off'); showError('সব স্ট্রিম অফলাইন।'); }
 }
+
+// =================================================================
+// LOAD LIVE TV (from M3U)
+// =================================================================
+function loadLiveStream(index, list, manual){
+  if(index<0||index>=list.length) return;
+  liveTvStreamIndex = index;
+  const stream = list[index];
+  nowPlayingUrl = stream.url;
+  retryCount=0;
+  hideError();
+  showSpinner('স্ট্রিম লোড হচ্ছে...');
+  updateSidebarHighlight(index, 'livetv');
+  if(hls){ hls.destroy(); hls=null; }
+  const src = stream.url;
+  if(window.Hls && Hls.isSupported()){
+    hls = new Hls({ maxBufferLength:30, manifestLoadingTimeOut:12000 });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ hideSpinner(); video.play().catch(()=>{}); updateQuality(); updatePiInfo(stream); });
+    hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) handleStreamFailLive(list); });
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src = src;
+    video.addEventListener('loadedmetadata', ()=>{ hideSpinner(); video.play().catch(()=>{}); updatePiInfo(stream); }, {once:true});
+    video.addEventListener('error', ()=>handleStreamFailLive(list), {once:true});
+  } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
+  if(manual) toast('▶ '+stream.name);
+  highlightNowPlaying();
+  updateSidebarList(list);
+}
+
+function handleStreamFailLive(list){
+  setConn('weak');
+  if(retryCount<MAX_RETRY){ retryCount++; showSpinner('আবার চেষ্টা ('+retryCount+')'); setTimeout(()=>loadLiveStream(liveTvStreamIndex,list,false),1500); return; }
+  if(liveTvStreamIndex<list.length-1){ showSpinner('পরবর্তী চ্যানেল...'); setTimeout(()=>loadLiveStream(liveTvStreamIndex+1,list,false),1200); }
+  else { setConn('off'); showError('সব চ্যানেল অফলাইন।'); }
+}
+
 function retryStream(){
   setConn('good');
-  loadStream(currentStreamIndex, false);
-  toast('স্ট্রিম রিফ্রেশ করা হচ্ছে...');
-}
-
-/* ===== QUALITY / CONN ===== */
-function setConn(state){
-  const dot = document.getElementById('connDot');
-  const txt = document.getElementById('connText');
-  dot.className = 'conn-dot';
-  if(state==='good'){ txt.textContent='সংযোগ: ভালো'; }
-  else if(state==='weak'){ dot.classList.add('weak'); txt.textContent='সংযোগ: দুর্বল'; }
-  else { dot.classList.add('off'); txt.textContent='সংযোগ: অফলাইন'; }
-}
-function updateQuality(){
-  document.getElementById('qualityText').textContent = video.videoHeight>=720 ? 'HD' : (video.videoHeight>0 ? 'SD' : 'HD');
-}
-video.addEventListener('playing', ()=>{ hideSpinner(); setConn('good'); updateQuality(); });
-video.addEventListener('waiting', ()=> showSpinner('বাফার হচ্ছে...'));
-
-/* ===== CONTROLS ===== */
-const playBtn=document.getElementById('playBtn');
-const muteBtn=document.getElementById('muteBtn');
-const volRange=document.getElementById('volRange');
-const fsBtn=document.getElementById('fsBtn');
-const pipBtn=document.getElementById('pipBtn');
-
-playBtn.onclick = ()=> video.paused ? video.play() : video.pause();
-video.addEventListener('play', ()=> playBtn.textContent='⏸');
-video.addEventListener('pause', ()=> playBtn.textContent='▶');
-muteBtn.onclick = ()=>{
-  video.muted = !video.muted;
-  muteBtn.textContent = video.muted ? '🔇' : '🔊';
-  volRange.value = video.muted ? 0 : video.volume;
-};
-volRange.oninput = ()=>{
-  video.volume = volRange.value;
-  video.muted = (volRange.value==0);
-  muteBtn.textContent = video.muted ? '🔇' : '🔊';
-};
-fsBtn.onclick = ()=>{
-  const box = document.querySelector('.video-box');
-  if(!document.fullscreenElement){
-    (box.requestFullscreen || box.webkitRequestFullscreen).call(box);
-  } else { document.exitFullscreen(); }
-};
-pipBtn.onclick = async ()=>{
-  try {
-    if(document.pictureInPictureElement) await document.exitPictureInPicture();
-    else await video.requestPictureInPicture();
-  } catch(e){ toast('PiP সাপোর্ট করছে না'); }
-};
-
-/* ===== SHARE / COPY ===== */
-function shareSite(){
-  const data = { title:'NSP Live TV', text:'লাইভ টিভি ও স্পোর্টস স্ট্রিম দেখুন!', url:location.href };
-  if(navigator.share) navigator.share(data).catch(()=>{});
-  else copyLink();
-}
-function copyLink(){
-  navigator.clipboard.writeText(location.href)
-    .then(()=> toast('লিংক কপি হয়েছে ✅'))
-    .catch(()=> toast('কপি করা যায়নি'));
-}
-function scrollToPlayer(){ document.getElementById('player').scrollIntoView({behavior:'smooth'}); if(video.paused && video.readyState>2) video.play().catch(()=>{}); }
-
-/* ===== USER STREAMS (FIFA ট্যাবে যুক্ত হবে) ===== */
-function addUserStream(){
-  const urlInput = document.getElementById('newLinkInput');
-  const nameInput = document.getElementById('newLinkName');
-  const url = urlInput.value.trim();
-  if(!url){ toast('লিংক দিন'); return; }
-  const name = nameInput.value.trim() || 'ব্যবহারকারীর স্ট্রিম';
-  if(allStreams.some(s=> s.url === url)){ toast('এই লিংক আগে থেকেই আছে'); return; }
-  allStreams.push({ name, url, live:true });
-  // যদি FIFA ট্যাব সক্রিয় থাকে, তাহলে সুইচার রিফ্রেশ করি
-  if(currentTab === 'fifa'){
-    buildSwitcher();
-    loadStream(allStreams.length-1, true);
-  } else {
-    // অন্য ট্যাবে থাকলে শুধু লিস্ট আপডেট করি, কিন্তু লোড করি না
-    buildSwitcher(); // তবুও রিফ্রেশ করে দিই
+  if(currentTab==='fifa'){ loadStream(currentStreamIndex,false); }
+  else {
+    const list = currentFilteredList.length ? currentFilteredList : liveTVChannels;
+    if(list.length>0) loadLiveStream(liveTvStreamIndex,list,false);
   }
-  urlInput.value = '';
-  nameInput.value = '';
-  renderUserLinks();
-  toast('✅ চ্যানেল যোগ হয়েছে');
+  toast('রিফ্রেশ করা হচ্ছে...');
 }
-function renderUserLinks(){
-  const container = document.getElementById('userLinkList');
+
+// =================================================================
+// PLAYER INFO OVERLAY
+// =================================================================
+function updatePiInfo(stream){
+  if(!stream) return;
+  document.getElementById('piName').textContent = stream.name || 'NSP Live';
+  const logo = stream.logo || FALLBACK_LOGO;
+  document.getElementById('piLogo').src = logo;
+  document.getElementById('piViews').textContent = Math.floor(Math.random()*20+5)+'K দেখছেন';
+}
+
+// =================================================================
+// SIDEBAR
+// =================================================================
+function buildSidebar(list){
+  const container = document.getElementById('sidebarList');
   container.innerHTML = '';
-  for(let i=DEFAULT_STREAMS.length; i<allStreams.length; i++){
-    const s = allStreams[i];
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.innerHTML = `${s.name} <button data-idx="${i}" class="del-link">✕</button>`;
-    chip.querySelector('.del-link').onclick = (e)=>{
-      const idx = parseInt(e.target.dataset.idx);
-      allStreams.splice(idx, 1);
-      if(currentTab === 'fifa'){
-        if(currentStreamIndex >= allStreams.length) currentStreamIndex = allStreams.length-1;
-        if(currentStreamIndex < 0) currentStreamIndex = 0;
-        buildSwitcher();
-        if(allStreams.length>0) loadStream(currentStreamIndex, false);
-        else showError('কোন চ্যানেল নেই। লিংক যোগ করুন।');
+  if(!list||list.length===0){ container.innerHTML='<div class="muted-note">কোন চ্যানেল নেই</div>'; return; }
+  const frag = document.createDocumentFragment();
+  list.forEach((ch,i)=>{
+    const div = document.createElement('div');
+    div.className = 'sb-item' + (ch.url === nowPlayingUrl ? ' active' : '');
+    div.dataset.url = ch.url;
+    const logo = ch.logo || FALLBACK_LOGO;
+    div.innerHTML = `<img class="sbi-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="sbi-info"><div class="sbi-name">${escapeHtml(ch.name)}</div><div class="sbi-cat">${escapeHtml(ch.group||'')}</div></div><span class="sbi-badge">লাইভ</span>`;
+    div.onclick = ()=>{
+      if(currentTab==='fifa'){
+        const idx = allStreams.findIndex(s=>s.url===ch.url);
+        if(idx>=0) loadStream(idx,true);
       } else {
-        buildSwitcher(); // শুধু UI আপডেট
+        const idx = liveTVChannels.findIndex(s=>s.url===ch.url);
+        if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
       }
-      renderUserLinks();
-      toast('চ্যানেল মুছে ফেলা হয়েছে');
+    };
+    frag.appendChild(div);
+  });
+  container.appendChild(frag);
+}
+
+function updateSidebarHighlight(index, tab){
+  const items = document.querySelectorAll('#sidebarList .sb-item');
+  items.forEach((el,i)=>{ el.classList.toggle('active', i===index); });
+}
+
+function updateSidebarList(list){
+  // rebuild if needed
+  buildSidebar(list);
+}
+
+// =================================================================
+// CATEGORY CHIPS (sidebar)
+// =================================================================
+function buildCategoryChips(){
+  const container = document.getElementById('sidebarCats');
+  container.innerHTML = '';
+  const allCats = ['সব', ...categories];
+  allCats.forEach(cat=>{
+    const chip = document.createElement('span');
+    chip.className = 'cat-chip' + (cat==='সব' ? ' active' : '');
+    chip.textContent = cat;
+    chip.onclick = ()=>{
+      container.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      if(currentTab==='livetv'){
+        if(cat==='সব') currentFilteredList = liveTVChannels;
+        else currentFilteredList = liveTVChannels.filter(ch=>ch.group===cat);
+        buildSidebar(currentFilteredList);
+        if(currentFilteredList.length>0) loadLiveStream(0, currentFilteredList, false);
+      }
     };
     container.appendChild(chip);
-  }
+  });
 }
 
-/* ============================================================
-   M3U PLAYLIST FETCH & PARSE
-   ============================================================ */
-async function fetchM3U(){
-  try {
-    showSpinner('Live TV চ্যানেল লোড হচ্ছে...');
-    const resp = await fetch(M3U_URL);
-    if(!resp.ok) throw new Error('Network response was not ok');
-    const text = await resp.text();
-    parseM3U(text);
-    hideSpinner();
-    // ক্যাটাগরি বাটন তৈরি
-    buildCategoryButtons();
-    // ডিফল্ট ক্যাটাগরি "সব" সিলেক্ট করে সুইচার বিল্ড
-    filterByCategory('সব');
-    toast('✅ Live TV চ্যানেল লোড হয়েছে');
-  } catch(e){
-    console.error(e);
-    hideSpinner();
-    showError('M3U প্লেলিস্ট লোড করতে ব্যর্থ হয়েছে। ইন্টারনেট চেক করুন বা পরে আবার চেষ্টা করুন।');
+// =================================================================
+// OTT SECTIONS (horizontal rows)
+// =================================================================
+function renderOttSections(){
+  const container = document.getElementById('ottSections');
+  container.innerHTML = '';
+  // generate 5 sections from categories
+  const featuredCats = ['Sports','News','Entertainment','Movie','Kids','Islamic','International','Bangla'];
+  const usedCats = new Set();
+  let sections = [];
+  for(const cat of featuredCats){
+    const chs = liveTVChannels.filter(ch => ch.group && ch.group.toLowerCase().includes(cat.toLowerCase()));
+    if(chs.length>0 && !usedCats.has(cat)){ sections.push({name:cat, channels:chs}); usedCats.add(cat); }
+    if(sections.length>=6) break;
   }
+  if(sections.length===0 && liveTVChannels.length>0){
+    sections.push({name:'সব চ্যানেল', channels:liveTVChannels.slice(0,20)});
+  }
+  sections.forEach(sec=>{
+    const section = document.createElement('div');
+    section.className = 'ott-section';
+    section.innerHTML = `<div class="sec-header"><h2>${escapeHtml(sec.name)}</h2><span class="see-all">সব দেখুন →</span></div><div class="ott-scroll" id="scroll-${sec.name.replace(/\s/g,'')}"></div>`;
+    container.appendChild(section);
+    const scroll = section.querySelector('.ott-scroll');
+    sec.channels.slice(0,15).forEach(ch=>{
+      const card = document.createElement('div');
+      card.className = 'ch-card' + (ch.url===nowPlayingUrl ? ' now-playing' : '');
+      const logo = ch.logo || FALLBACK_LOGO;
+      card.innerHTML = `<img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="cc-info"><div class="cc-name">${escapeHtml(ch.name)}</div><div class="cc-cat">${escapeHtml(ch.group||'')}</div><span class="cc-badge">লাইভ</span></div>`;
+      card.onclick = ()=>{
+        if(currentTab==='livetv'){
+          const idx = liveTVChannels.findIndex(c=>c.url===ch.url);
+          if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
+        } else {
+          const idx = allStreams.findIndex(c=>c.url===ch.url);
+          if(idx>=0) loadStream(idx, true);
+        }
+      };
+      scroll.appendChild(card);
+    });
+  });
+}
+
+function highlightNowPlaying(){
+  document.querySelectorAll('.ch-card').forEach(c=>c.classList.remove('now-playing'));
+  document.querySelectorAll('.ch-card').forEach(c=>{ if(c.dataset.url===nowPlayingUrl) c.classList.add('now-playing'); });
+  document.querySelectorAll('.sb-item').forEach(el=>{ el.classList.toggle('active', el.dataset.url===nowPlayingUrl); });
+}
+
+// =================================================================
+// M3U FETCH & PARSE
+// =================================================================
+function getCachedPlaylist(){ try{ const raw=localStorage.getItem(M3U_CACHE_KEY); if(!raw) return null; const obj=JSON.parse(raw); if(!obj||!obj.ts||!obj.text) return null; if(Date.now()-obj.ts>M3U_CACHE_TTL) return null; return obj.text; }catch(e){return null;} }
+function setCachedPlaylist(text){ try{ localStorage.setItem(M3U_CACHE_KEY, JSON.stringify({ts:Date.now(),text})); }catch(e){} }
+
+async function fetchM3U(forceRefresh){
+  const cached = !forceRefresh && getCachedPlaylist();
+  if(cached){ parseM3U(cached); finalizeChannelsLoaded(true); return; }
+  try {
+    const resp = await fetch(M3U_URL);
+    if(!resp.ok) throw new Error('status '+resp.status);
+    const text = await resp.text();
+    setCachedPlaylist(text);
+    parseM3U(text);
+    finalizeChannelsLoaded(false);
+  } catch(e){ console.error(e); toast('প্লেলিস্ট লোড ব্যর্থ'); }
 }
 
 function parseM3U(data){
   const lines = data.split('\n');
   liveTVChannels = [];
-  categories = [];
   const catSet = new Set();
   let current = null;
   for(let line of lines){
     line = line.trim();
     if(line.startsWith('#EXTINF:')){
-      // extract name and attributes
       const match = line.match(/^#EXTINF:([^,]*),(.*)$/);
       if(match){
         const attrs = match[1];
         const name = match[2].trim();
-        // extract group-title
         const grpMatch = attrs.match(/group-title="([^"]*)"/);
-        const group = grpMatch ? grpMatch[1] : 'অন্যান্য';
-        // extract tvg-logo
+        const group = grpMatch ? grpMatch[1].trim() : 'অন্যান্য';
         const logoMatch = attrs.match(/tvg-logo="([^"]*)"/);
         const logo = logoMatch ? logoMatch[1] : '';
-        current = { name, group, logo, url: '' };
+        current = { name, group, logo, url: '', live:true };
         catSet.add(group);
       }
     } else if(line.startsWith('http') && current){
@@ -778,251 +589,156 @@ function parseM3U(data){
       current = null;
     }
   }
-  categories = Array.from(catSet).sort();
-  if(categories.length===0) categories.push('সব');
+  categories = Array.from(catSet).sort((a,b)=>a.localeCompare(b,'bn'));
 }
 
-function buildCategoryButtons(){
-  categoryWrap.innerHTML = '';
-  categoryWrap.style.display = 'flex';
-  // সব ক্যাটাগরি বাটন
-  const allBtn = document.createElement('button');
-  allBtn.className = 'cat-btn active';
-  allBtn.textContent = 'সব';
-  allBtn.dataset.cat = 'সব';
-  allBtn.onclick = ()=> filterByCategory('সব');
-  categoryWrap.appendChild(allBtn);
-
-  categories.forEach(cat => {
-    if(cat === 'সব') return;
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn';
-    btn.textContent = cat;
-    btn.dataset.cat = cat;
-    btn.onclick = ()=> filterByCategory(cat);
-    categoryWrap.appendChild(btn);
-  });
-}
-
-let currentCategory = 'সব';
-
-function filterByCategory(cat){
-  currentCategory = cat;
-  // সব বাটন active করি
-  categoryWrap.querySelectorAll('.cat-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cat === cat);
-  });
-  // ফিল্টার করা চ্যানেল লিস্ট
-  const filtered = (cat === 'সব') ? liveTVChannels : liveTVChannels.filter(ch => ch.group === cat);
-  // সুইচার রিফ্রেশ (তবে currentStreamIndex রিসেট করি)
-  // আমরা সাময়িকভাবে সুইচার বানাবো, কিন্তু লোড করব প্রথম চ্যানেল
-  const tempList = filtered;
-  // সুইচার তৈরির জন্য আমরা buildSwitcherWithList ব্যবহার করব
-  buildSwitcherWithList(tempList);
-  // প্রথম চ্যানেল লোড করি (যদি থাকে)
-  if(tempList.length > 0){
-    // set currentStreamIndex = 0 এবং লোড করি
-    currentStreamIndex = 0;
-    // কিন্তু আমাদের getCurrentChannelList এখনো liveTVChannels রিটার্ন করে, তাই আলাদা করে লোড করতে হবে
-    loadStreamFromList(tempList, 0, true);
-  } else {
-    switcher.innerHTML = '<span style="color:var(--text2);font-size:13px;">এই ক্যাটাগরিতে কোনো চ্যানেল নেই</span>';
-    showError('এই ক্যাটাগরিতে কোনো চ্যানেল নেই');
+function finalizeChannelsLoaded(fromCache){
+  buildCategoryChips();
+  currentFilteredList = liveTVChannels;
+  buildSidebar(liveTVChannels);
+  renderOttSections();
+  if(!fromCache) toast('✅ '+liveTVChannels.length+'টি চ্যানেল লোড হয়েছে');
+  if(currentTab==='livetv' && liveTVChannels.length>0){
+    if(!nowPlayingUrl || !liveTVChannels.find(c=>c.url===nowPlayingUrl)){
+      loadLiveStream(0, liveTVChannels, false);
+    }
   }
 }
 
-function buildSwitcherWithList(list){
-  switcher.innerHTML = '';
-  if(!list || list.length===0){
-    switcher.innerHTML = '<span style="color:var(--text2);font-size:13px;">কোন চ্যানেল পাওয়া যায়নি</span>';
-    return;
-  }
-  list.forEach((s,i)=>{
-    const b = document.createElement('button');
-    b.className = 'stream-btn' + (i===currentStreamIndex ? ' active' : '');
-    b.innerHTML = (s.live ? '<span class="live-mini"></span>' : '') + s.name;
-    b.onclick = ()=> {
-      // load this stream from the filtered list
-      loadStreamFromList(list, i, true);
-    };
-    switcher.appendChild(b);
-  });
-}
-
-// ফিল্টার করা লিস্ট থেকে লোড করার ফাংশন (শুধু Live TV ট্যাবের জন্য)
-let currentFilteredList = [];
-
-function loadStreamFromList(list, index, manual){
-  if(index<0 || index>=list.length) return;
-  currentFilteredList = list; // সংরক্ষণ
-  // স্ট্রিম অবজেক্ট নিই
-  const stream = list[index];
-  // আমাদের main currentStreamIndex আপডেট করি (যাতে সুইচারের active চিহ্ন ঠিক থাকে)
-  // কিন্তু getCurrentChannelList() liveTVChannels রিটার্ন করে, তাই আমরা আলাদা ট্র্যাক রাখি
-  // আমরা currentStreamIndex কে আপডেট করি না, বরং সুইচারের সক্রিয় চিহ্ন দিতে আমরা class toggle করব
-  // সুতরাং আমরা শুধু লোড করব এবং সুইচারে active ক্লাস দেব
-  // আমরা active চিহ্ন দেওয়ার জন্য পরে markActiveInList(list) কল করব
-  // এখন লোড শুরু
-  retryCount = 0;
-  hideError();
-  showSpinner('স্ট্রিম লোড হচ্ছে...');
-  const src = stream.url;
-
-  if(hls){ hls.destroy(); hls=null; }
-
-  if(window.Hls && Hls.isSupported()){
-    hls = new Hls({ maxBufferLength: 30, manifestLoadingTimeOut: 12000 });
-    hls.loadSource(src);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
-      hideSpinner();
-      video.play().catch(()=>{});
-      updateQuality();
-    });
-    hls.on(Hls.Events.ERROR, (evt, data)=>{
-      if(data.fatal) handleStreamFailLive(list);
-    });
-  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
-    video.src = src;
-    video.addEventListener('loadedmetadata', ()=>{
-      hideSpinner();
-      video.play().catch(()=>{});
-    }, {once:true});
-    video.addEventListener('error', ()=> handleStreamFailLive(list), {once:true});
-  } else {
-    showError('আপনার ব্রাউজার এই স্ট্রিম সাপোর্ট করে না।');
-  }
-  if(manual) toast('চ্যানেল: '+stream.name);
-  // সুইচারে active চিহ্ন দিই
-  markActiveInList(list, index);
-}
-
-function handleStreamFailLive(list){
-  setConn('weak');
-  if(retryCount < MAX_RETRY){
-    retryCount++;
-    showSpinner('আবার চেষ্টা ('+retryCount+')');
-    setTimeout(()=> {
-      // কনটেক্সট: বর্তমান ইনডেক্স ব্যবহার করি
-      const idx = currentStreamIndex; // কিন্তু আমাদের আলাদা ট্র্যাক রাখা উচিত
-      // আমরা জানি না কোন ইনডেক্স, তাই currentFilteredList ও currentStreamIndex ব্যবহার করি
-      if(currentFilteredList && currentFilteredList.length>0 && currentStreamIndex<currentFilteredList.length){
-        loadStreamFromList(currentFilteredList, currentStreamIndex, false);
-      } else {
-        // fallback
-        retryStream();
-      }
-    }, 1500);
-    return;
-  }
-  // পরবর্তী চ্যানেল চেষ্টা
-  const nextIdx = currentStreamIndex + 1;
-  if(currentFilteredList && nextIdx < currentFilteredList.length){
-    showSpinner('পরবর্তী চ্যানেল লোড হচ্ছে...');
-    setTimeout(()=> loadStreamFromList(currentFilteredList, nextIdx, false), 1200);
-  } else {
-    setConn('off');
-    showError('সবগুলো স্ট্রিম বর্তমানে উপলব্ধ নেই। অন্য ক্যাটাগরি নির্বাচন করুন।');
-  }
-}
-
-function markActiveInList(list, index){
-  const btns = switcher.querySelectorAll('.stream-btn');
-  btns.forEach((b,i)=>{
-    b.classList.toggle('active', i===index && i<list.length);
-  });
-}
-
-// Live TV ট্যাবের জন্য ক্যাটাগরি ফিল্টার কল করলে আমরা লিস্ট পাব
-// ওভাররাইড করি filterByCategory যেন সেটি currentFilteredList আপডেট করে এবং loadStreamFromList কল করে
-
-/* ============================================================
-   TAB SWITCHING
-   ============================================================ */
+// =================================================================
+// TAB SWITCHING
+// =================================================================
 function switchTab(tab){
-  if(tab === currentTab) return;
+  if(tab===currentTab) return;
   currentTab = tab;
-  // UI আপডেট
-  document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el => {
-    el.classList.toggle('active', el.dataset.tab === tab);
-  });
-  // হিরো টাইটেল ও বিবরণ পরিবর্তন
-  const heroTitle = document.getElementById('heroTitle');
-  const heroDesc = document.getElementById('heroDesc');
-  const sectionTitle = document.getElementById('sectionTitle');
-  if(tab === 'fifa'){
-    heroTitle.innerHTML = 'FIFA World Cup <span class="vs">·</span> লাইভ';
-    heroDesc.textContent = 'স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে দেখুন';
-    sectionTitle.textContent = 'FIFA World Cup স্ট্রিম';
-    categoryWrap.style.display = 'none';
-    // সুইচার রিফ্রেশ
-    buildSwitcher();
-    if(allStreams.length > 0){
-      if(currentStreamIndex >= allStreams.length) currentStreamIndex = 0;
-      loadStream(currentStreamIndex, false);
-    } else {
-      showError('কোন চ্যানেল নেই। লিংক যোগ করুন।');
-    }
-  } else { // livetv
-    heroTitle.innerHTML = 'Live TV <span class="vs">·</span> আইপি টিভি';
-    heroDesc.textContent = 'বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
-    sectionTitle.textContent = 'Live TV চ্যানেল';
-    categoryWrap.style.display = 'flex';
-    // যদি liveTVChannels খালি থাকে, তাহলে ফেচ করি
-    if(liveTVChannels.length === 0){
-      fetchM3U();
-    } else {
-      // আগের ক্যাটাগরি ফিল্টার পুনরায় প্রয়োগ
-      filterByCategory(currentCategory);
-    }
+  document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el=> el.classList.toggle('active', el.dataset.tab===tab));
+  const heroTitle=document.getElementById('heroTitle'), heroDesc=document.getElementById('heroDesc');
+  const sidebarCats = document.getElementById('sidebarCats');
+  if(tab==='fifa'){
+    heroTitle.innerHTML='FIFA World Cup <span class="vs">·</span> লাইভ';
+    heroDesc.textContent='স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে';
+    sidebarCats.style.display='none';
+    // hide ott sections? but keep
+    document.getElementById('ottSections').style.display='block';
+    buildSidebar(allStreams);
+    if(allStreams.length>0){ if(currentStreamIndex>=allStreams.length) currentStreamIndex=0; loadStream(currentStreamIndex,false); }
+  } else {
+    heroTitle.innerHTML='Live TV <span class="vs">·</span> আইপি টিভি';
+    heroDesc.textContent='বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
+    sidebarCats.style.display='flex';
+    document.getElementById('ottSections').style.display='block';
+    if(liveTVChannels.length===0){ fetchM3U(); }
+    else { buildSidebar(currentFilteredList.length?currentFilteredList:liveTVChannels); if(liveTVChannels.length>0) loadLiveStream(liveTvStreamIndex, currentFilteredList.length?currentFilteredList:liveTVChannels, false); }
   }
 }
 
-// ইভেন্ট লিসেনার ট্যাব ক্লিকের জন্য
-document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el => {
-  el.addEventListener('click', function(e){
-    const tab = this.dataset.tab;
-    if(tab) {
-      e.preventDefault();
-      switchTab(tab);
-    }
-  });
+// =================================================================
+// CONTROLS
+// =================================================================
+const playBtn=document.getElementById('playBtn'), muteBtn=document.getElementById('muteBtn'), volRange=document.getElementById('volRange'), fsBtn=document.getElementById('fsBtn'), pipBtn=document.getElementById('pipBtn');
+playBtn.onclick = ()=>{ video.paused ? video.play() : video.pause(); };
+video.addEventListener('play', ()=> playBtn.textContent='⏸');
+video.addEventListener('pause', ()=> playBtn.textContent='▶');
+muteBtn.onclick = ()=>{ video.muted = !video.muted; muteBtn.textContent=video.muted?'🔇':'🔊'; volRange.value=video.muted?0:video.volume; };
+volRange.oninput = ()=>{ video.volume=volRange.value; video.muted=(volRange.value==0); muteBtn.textContent=video.muted?'🔇':'🔊'; };
+fsBtn.onclick = ()=>{
+  const box = document.querySelector('.video-box');
+  if(!document.fullscreenElement){ (box.requestFullscreen||box.webkitRequestFullscreen).call(box); isFullscreen=true; }
+  else { document.exitFullscreen(); isFullscreen=false; }
+};
+pipBtn.onclick = async ()=>{ try{ if(document.pictureInPictureElement) await document.exitPictureInPicture(); else await video.requestPictureInPicture(); }catch(e){ toast('PiP সাপোর্ট নয়'); } };
+
+// =================================================================
+// SHARE / COPY
+// =================================================================
+function shareSite(){ if(navigator.share) navigator.share({title:'NSP Live TV',text:'লাইভ টিভি ও স্পোর্টস স্ট্রিম',url:location.href}).catch(()=>{}); else copyLink(); }
+function copyLink(){ navigator.clipboard.writeText(location.href).then(()=>toast('লিংক কপি ✅')).catch(()=>toast('কপি ব্যর্থ')); }
+
+// =================================================================
+// SIDEBAR SEARCH
+// =================================================================
+document.getElementById('sidebarSearch').addEventListener('input', function(){
+  const val = this.value.trim().toLowerCase();
+  let list;
+  if(currentTab==='fifa'){ list = allStreams.filter(s=>s.name.toLowerCase().includes(val)); }
+  else { list = liveTVChannels.filter(ch=>ch.name.toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
+  buildSidebar(list);
 });
 
-/* ============================================================
-   SCROLL REVEAL & NAV ACTIVE (ডুপ্লিকেট এড়ানো)
-   ============================================================ */
-const io = new IntersectionObserver(es=> es.forEach(e=> { if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
-
-/* ============================================================
-   ONLINE / OFFLINE
-   ============================================================ */
-window.addEventListener('offline', ()=>{ setConn('off'); toast('ইন্টারনেট বিচ্ছিন্ন'); });
-window.addEventListener('online', ()=>{ setConn('good'); toast('অনলাইনে'); retryStream(); });
-
-/* ============================================================
-   INIT
-   ============================================================ */
-window.addEventListener('load', ()=>{
-  // ডিফল্ট FIFA ট্যাব
-  currentTab = 'fifa';
-  // ক্যাটাগরি ওয়াপ ডিফল্ট লুকান
-  categoryWrap.style.display = 'none';
-  // ইউজার লিংক রেন্ডার
-  renderUserLinks();
-  // সুইচার বিল্ড ও প্রথম স্ট্রিম লোড
-  buildSwitcher();
-  if(allStreams.length > 0) {
-    loadStream(0, false);
-  } else {
-    showError('কোন চ্যানেল নেই। লিংক যোগ করুন।');
+// =================================================================
+// KEYBOARD SHORTCUTS
+// =================================================================
+document.addEventListener('keydown', (e)=>{
+  if(e.target.tagName==='INPUT') return;
+  const list = currentTab==='fifa' ? allStreams : (currentFilteredList.length?currentFilteredList:liveTVChannels);
+  if(e.key==='ArrowUp' || e.key==='ArrowDown'){
+    e.preventDefault();
+    const step = e.key==='ArrowUp' ? -1 : 1;
+    let idx = currentTab==='fifa' ? currentStreamIndex : liveTvStreamIndex;
+    idx = Math.min(Math.max(idx+step, 0), list.length-1);
+    if(currentTab==='fifa') loadStream(idx, true);
+    else loadLiveStream(idx, list, true);
   }
-  // নেভিগেশন active সেট
-  document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el => {
-    el.classList.toggle('active', el.dataset.tab === 'fifa');
+  if(e.key===' '){ e.preventDefault(); video.paused ? video.play() : video.pause(); }
+  if(e.key==='f' || e.key==='F'){ fsBtn.click(); }
+  if(e.key==='m' || e.key==='M'){ muteBtn.click(); }
+});
+
+// =================================================================
+// MINI PLAYER (floating when scroll down)
+// =================================================================
+let miniVisible = false;
+const miniPlayer = document.getElementById('miniPlayer');
+window.addEventListener('scroll', ()=>{
+  const playerRect = document.querySelector('.player-col').getBoundingClientRect();
+  if(playerRect.bottom < 0 && !miniVisible){
+    miniPlayer.classList.add('show');
+    miniVideo.src = video.src;
+    miniVideo.currentTime = video.currentTime;
+    miniVideo.play().catch(()=>{});
+    miniVisible = true;
+  } else if(playerRect.top > 0 && miniVisible){
+    miniPlayer.classList.remove('show');
+    miniVideo.pause();
+    miniVisible = false;
+  }
+});
+function closeMini(){ miniPlayer.classList.remove('show'); miniVideo.pause(); miniVisible=false; }
+
+// =================================================================
+// INIT
+// =================================================================
+window.addEventListener('load', ()=>{
+  document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el=> el.classList.toggle('active', el.dataset.tab==='fifa'));
+  document.getElementById('sidebarCats').style.display='none';
+  buildSidebar(allStreams);
+  if(allStreams.length>0) loadStream(0, false);
+  fetchM3U(); // background fetch
+  // reveal animations
+  const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  // tab clicks
+  document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el=>{
+    el.addEventListener('click', function(e){ e.preventDefault(); const tab=this.dataset.tab; if(tab) switchTab(tab); });
+  });
+  // fullscreen hide sidebar
+  document.addEventListener('fullscreenchange', ()=>{
+    const side = document.getElementById('sidebarCol');
+    side.style.display = document.fullscreenElement ? 'none' : '';
   });
 });
+
+// =================================================================
+// OVERRIDE: keep all existing functions but ensure compatibility
+// =================================================================
+window.loadStream = loadStream;
+window.loadLiveStream = loadLiveStream;
+window.retryStream = retryStream;
+window.shareSite = shareSite;
+window.copyLink = copyLink;
+window.scrollToPlayer = scrollToPlayer;
+window.switchTab = switchTab;
+window.closeMini = closeMini;
 </script>
 </body>
 </html>
