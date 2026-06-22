@@ -28,9 +28,9 @@
     .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease}
     .reveal.show{opacity:1;transform:translateY(0)}
 
-    /* WATERMARK - Center of video */
-    .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,0.10);font-size:28px;font-weight:700;letter-spacing:2px;pointer-events:none;z-index:4;font-family:'Poppins',sans-serif;text-shadow:0 2px 20px rgba(0,0,0,0.4);white-space:nowrap}
-    @media(max-width:768px){.watermark{font-size:18px}}
+    /* WATERMARK - Center of video, smaller */
+    .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,0.08);font-size:18px;font-weight:700;letter-spacing:2px;pointer-events:none;z-index:4;font-family:'Poppins',sans-serif;text-shadow:0 2px 20px rgba(0,0,0,0.4);white-space:nowrap}
+    @media(max-width:768px){.watermark{font-size:13px}}
 
     /* HEADER */
     header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:8px 24px;background:rgba(8,11,20,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05)}
@@ -153,8 +153,8 @@
     .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--card2);border:1px solid var(--accent);color:var(--text);padding:10px 24px;border-radius:40px;font-size:13px;opacity:0;pointer-events:none;transition:0.4s;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* FOOTER - fully visible on mobile */
-    footer{margin:20px 24px 10px;padding:24px;border-radius:var(--radius);text-align:center;background:var(--card);border:1px solid rgba(255,255,255,0.04)}
+    /* FOOTER - fully visible on mobile, no overlap */
+    footer{margin:20px 24px 10px;padding:24px;border-radius:var(--radius);text-align:center;background:var(--card);border:1px solid rgba(255,255,255,0.04);position:relative;z-index:10}
     footer .brand{font-weight:700;font-size:16px;margin-bottom:4px}
     footer .brand b{color:var(--accent)}
     footer p{color:var(--text2);font-size:13px;margin-bottom:10px}
@@ -204,6 +204,9 @@
     body.tab-livetv .livetv-content{display:block}
     body.tab-fifa .fifa-content{display:block}
     body.tab-fifa .livetv-content{display:none}
+
+    /* Rotation button */
+    .ctrl.rotate-btn{font-size:20px}
   </style>
 </head>
 <body class="tab-fifa">
@@ -234,11 +237,11 @@
 <!-- MAIN OTT LAYOUT -->
 <div class="ott-layout">
   <!-- PLAYER COLUMN -->
-  <div class="player-col">
+  <div class="player-col" id="playerCol">
     <div class="player-wrap">
-      <div class="video-box">
+      <div class="video-box" id="videoBox">
         <video id="video" playsinline></video>
-        <!-- WATERMARK - center of video -->
+        <!-- WATERMARK - center of video, smaller -->
         <div class="watermark">Salman Farshi</div>
         <!-- Player Info Overlay -->
         <div class="player-info-overlay" id="playerInfoOverlay">
@@ -257,11 +260,12 @@
       </div>
       <!-- Controls -->
       <div class="controls">
-        <button class="ctrl" id="playBtn">▶</button>
-        <button class="ctrl" id="muteBtn">🔊</button>
+        <button class="ctrl" id="playBtn" title="Play/Pause">▶</button>
+        <button class="ctrl" id="muteBtn" title="Mute">🔊</button>
         <div class="vol"><input type="range" id="volRange" min="0" max="1" step="0.01" value="1"></div>
-        <button class="ctrl" id="pipBtn">🗔</button>
-        <button class="ctrl" id="fsBtn">⛶</button>
+        <button class="ctrl" id="pipBtn" title="Picture-in-Picture">🗔</button>
+        <button class="ctrl" id="fsBtn" title="Fullscreen">⛶</button>
+        <button class="ctrl rotate-btn" id="rotateBtn" title="Rotate to Landscape">↻</button>
         <div class="quality-ind"><span class="conn-dot" id="connDot"></span><span id="connText">সংযোগ: ভালো</span> · <span id="qualityText">HD</span></div>
       </div>
       <div class="extra-actions">
@@ -289,7 +293,7 @@
 </div>
 
 <!-- FOOTER -->
-<footer class="reveal">
+<footer class="reveal" id="mainFooter">
   <div class="brand">NSP <b>Live TV</b></div>
   <p>Designed by <b>Salman Farshi</b></p>
   <div class="foot-links">
@@ -369,7 +373,12 @@ let isFullscreen = false;
 // =================================================================
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
-function scrollToPlayer(){ document.querySelector('.player-col').scrollIntoView({behavior:'smooth',block:'start'}); }
+function scrollToPlayer(){ 
+  const playerCol = document.getElementById('playerCol');
+  if(playerCol) {
+    playerCol.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
 
 // =================================================================
 // PLAYER CORE
@@ -697,7 +706,7 @@ function switchTab(tab){
 // =================================================================
 // CONTROLS
 // =================================================================
-const playBtn=document.getElementById('playBtn'), muteBtn=document.getElementById('muteBtn'), volRange=document.getElementById('volRange'), fsBtn=document.getElementById('fsBtn'), pipBtn=document.getElementById('pipBtn');
+const playBtn=document.getElementById('playBtn'), muteBtn=document.getElementById('muteBtn'), volRange=document.getElementById('volRange'), fsBtn=document.getElementById('fsBtn'), pipBtn=document.getElementById('pipBtn'), rotateBtn=document.getElementById('rotateBtn');
 playBtn.onclick = ()=>{ video.paused ? video.play() : video.pause(); };
 video.addEventListener('play', ()=> playBtn.textContent='⏸');
 video.addEventListener('pause', ()=> playBtn.textContent='▶');
@@ -708,6 +717,7 @@ fsBtn.onclick = ()=>{
   if(!document.fullscreenElement){ (box.requestFullscreen||box.webkitRequestFullscreen).call(box); isFullscreen=true; }
   else { document.exitFullscreen(); isFullscreen=false; }
 };
+// PiP toggle: click to close if open, else open
 pipBtn.onclick = async ()=>{
   try {
     if(document.pictureInPictureElement) {
@@ -716,6 +726,22 @@ pipBtn.onclick = async ()=>{
       await video.requestPictureInPicture();
     }
   } catch(e){ toast('PiP সাপোর্ট নয়'); }
+};
+// Rotation: force landscape via screen orientation
+rotateBtn.onclick = async ()=>{
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock('landscape');
+      toast('ল্যান্ডস্কেপ মোড');
+    } else {
+      // Fallback: request fullscreen with landscape hint
+      const box = document.querySelector('.video-box');
+      if (!document.fullscreenElement) {
+        await (box.requestFullscreen||box.webkitRequestFullscreen).call(box);
+      }
+      toast('ফুলস্ক্রিন ল্যান্ডস্কেপ');
+    }
+  } catch(e){ toast('রোটেশন সাপোর্ট নয়'); }
 };
 
 // =================================================================
