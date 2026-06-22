@@ -28,9 +28,9 @@
     .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease}
     .reveal.show{opacity:1;transform:translateY(0)}
 
-    /* WATERMARK */
-    .watermark{position:absolute;bottom:80px;right:24px;color:rgba(255,255,255,0.12);font-size:14px;font-weight:600;letter-spacing:1px;pointer-events:none;z-index:4;font-family:'Poppins',sans-serif;text-shadow:0 2px 10px rgba(0,0,0,0.5)}
-    @media(max-width:768px){.watermark{bottom:70px;right:14px;font-size:11px}}
+    /* WATERMARK - Center of video */
+    .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,0.10);font-size:28px;font-weight:700;letter-spacing:2px;pointer-events:none;z-index:4;font-family:'Poppins',sans-serif;text-shadow:0 2px 20px rgba(0,0,0,0.4);white-space:nowrap}
+    @media(max-width:768px){.watermark{font-size:18px}}
 
     /* HEADER */
     header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:8px 24px;background:rgba(8,11,20,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05)}
@@ -153,7 +153,7 @@
     .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--card2);border:1px solid var(--accent);color:var(--text);padding:10px 24px;border-radius:40px;font-size:13px;opacity:0;pointer-events:none;transition:0.4s;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* FOOTER */
+    /* FOOTER - fully visible on mobile */
     footer{margin:20px 24px 10px;padding:24px;border-radius:var(--radius);text-align:center;background:var(--card);border:1px solid rgba(255,255,255,0.04)}
     footer .brand{font-weight:700;font-size:16px;margin-bottom:4px}
     footer .brand b{color:var(--accent)}
@@ -163,6 +163,7 @@
     .foot-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
     .badge{margin-top:12px;font-size:10px;color:var(--text2)}
     .badge span{color:var(--accent)}
+    @media(max-width:768px){footer{margin:12px 12px 70px;padding:16px}}
 
     /* Mini Player (floating) */
     .mini-player{position:fixed;bottom:20px;right:20px;width:320px;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);box-shadow:0 12px 40px rgba(0,0,0,0.7);z-index:50;display:none;transition:0.3s}
@@ -171,12 +172,26 @@
     @media(max-width:768px){.mini-player{width:200px;bottom:80px;right:10px}}
     .mini-player.show{display:block}
 
-    /* BOTTOM NAV (mobile) */
+    /* BOTTOM NAV (mobile) - 4 buttons */
     .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;justify-content:space-around;padding:6px 4px 8px;background:rgba(8,11,20,0.95);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.04)}
-    .bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--text2);transition:0.2s;cursor:pointer;padding:4px 12px;border-radius:12px}
+    .bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--text2);transition:0.2s;cursor:pointer;padding:4px 8px;border-radius:12px}
     .bottom-nav a.active,.bottom-nav a:active{color:var(--accent);background:rgba(0,229,255,0.06)}
     .bottom-nav a .i{font-size:20px}
     @media(max-width:768px){.bottom-nav{display:flex}}
+
+    /* Mobile Search Overlay */
+    .mobile-search-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:rgba(8,11,20,0.95);backdrop-filter:blur(10px);display:none;flex-direction:column;padding:20px 16px}
+    .mobile-search-overlay.active{display:flex}
+    .mobile-search-overlay .ms-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .mobile-search-overlay .ms-header h3{font-size:18px}
+    .mobile-search-overlay .ms-close{background:transparent;border:none;color:var(--text);font-size:24px;cursor:pointer}
+    .mobile-search-overlay input{width:100%;padding:12px 16px;border-radius:40px;background:var(--card);border:1px solid rgba(255,255,255,0.06);color:var(--text);font-size:16px;outline:none;font-family:inherit}
+    .mobile-search-overlay input:focus{border-color:var(--accent)}
+    .mobile-search-results{flex:1;overflow-y:auto;margin-top:16px;display:flex;flex-direction:column;gap:6px}
+    .mobile-search-results .ms-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+    .mobile-search-results .ms-item .ms-logo{width:36px;height:36px;border-radius:8px;background:var(--card2);object-fit:contain;padding:4px}
+    .mobile-search-results .ms-item .ms-name{font-size:14px;font-weight:600}
+    .mobile-search-results .ms-item .ms-cat{font-size:11px;color:var(--text2)}
 
     /* misc */
     .grid-empty{text-align:center;color:var(--text2);padding:40px 10px}
@@ -223,7 +238,7 @@
     <div class="player-wrap">
       <div class="video-box">
         <video id="video" playsinline></video>
-        <!-- WATERMARK -->
+        <!-- WATERMARK - center of video -->
         <div class="watermark">Salman Farshi</div>
         <!-- Player Info Overlay -->
         <div class="player-info-overlay" id="playerInfoOverlay">
@@ -285,12 +300,23 @@
   <div class="badge">⚡ Powered by <span>NSP Streaming Engine</span></div>
 </footer>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV (mobile) - 4 buttons -->
 <nav class="bottom-nav" id="bottomNav">
   <a class="active" data-tab="fifa"><span class="i">⚽</span>FIFA</a>
   <a data-tab="livetv"><span class="i">📡</span>Live TV</a>
+  <a id="mobileSearchBtn"><span class="i">🔍</span>সার্চ</a>
   <a href="#" onclick="shareSite();return false;"><span class="i">📤</span>শেয়ার</a>
 </nav>
+
+<!-- MOBILE SEARCH OVERLAY -->
+<div class="mobile-search-overlay" id="mobileSearchOverlay">
+  <div class="ms-header">
+    <h3>🔍 চ্যানেল খুঁজুন</h3>
+    <button class="ms-close" id="msClose">✕</button>
+  </div>
+  <input type="text" id="mobileSearchInput" placeholder="চ্যানেলের নাম বা ক্যাটাগরি...">
+  <div class="mobile-search-results" id="mobileSearchResults"></div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -385,7 +411,8 @@ function loadStream(index, manual){
   if(manual) toast('▶ '+list[index].name);
   nowPlayingUrl = src;
   highlightNowPlaying();
-  scrollToPlayer();
+  // Auto scroll to player on channel click
+  if(manual) scrollToPlayer();
 }
 
 let retryCount=0; const MAX_RETRY=2;
@@ -423,7 +450,7 @@ function loadLiveStream(index, list, manual){
   } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
   if(manual) toast('▶ '+stream.name);
   highlightNowPlaying();
-  scrollToPlayer();
+  if(manual) scrollToPlayer();
 }
 
 function handleStreamFailLive(list){
@@ -518,7 +545,6 @@ function buildCategoryChips(){
 function renderFifaSections(){
   const container = document.getElementById('fifaSections');
   container.innerHTML = '';
-  // FIFA uses allStreams
   const sec = { name: 'FIFA চ্যানেল', channels: allStreams };
   const section = document.createElement('div');
   section.className = 'ott-section';
@@ -707,6 +733,50 @@ document.getElementById('sidebarSearch').addEventListener('input', function(){
   if(currentTab==='fifa'){ list = allStreams.filter(s=>s.name.toLowerCase().includes(val)); }
   else { list = liveTVChannels.filter(ch=>ch.name.toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
   buildSidebar(list);
+});
+
+// =================================================================
+// MOBILE SEARCH OVERLAY
+// =================================================================
+const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
+const mobileSearchInput = document.getElementById('mobileSearchInput');
+const mobileSearchResults = document.getElementById('mobileSearchResults');
+
+document.getElementById('mobileSearchBtn').addEventListener('click', ()=>{
+  mobileSearchOverlay.classList.add('active');
+  mobileSearchInput.value = '';
+  mobileSearchResults.innerHTML = '';
+  mobileSearchInput.focus();
+});
+
+document.getElementById('msClose').addEventListener('click', ()=>{
+  mobileSearchOverlay.classList.remove('active');
+});
+
+mobileSearchInput.addEventListener('input', function(){
+  const val = this.value.trim().toLowerCase();
+  let list;
+  if(currentTab==='fifa'){ list = allStreams.filter(s=>s.name.toLowerCase().includes(val)); }
+  else { list = liveTVChannels.filter(ch=>ch.name.toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
+  mobileSearchResults.innerHTML = '';
+  if(list.length===0){ mobileSearchResults.innerHTML = '<div class="muted-note">কোন চ্যানেল পাওয়া যায়নি</div>'; return; }
+  list.forEach(ch=>{
+    const div = document.createElement('div');
+    div.className = 'ms-item';
+    const logo = ch.logo || FALLBACK_LOGO;
+    div.innerHTML = `<img class="ms-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div><div class="ms-name">${escapeHtml(ch.name)}</div><div class="ms-cat">${escapeHtml(ch.group||'')}</div></div>`;
+    div.onclick = ()=>{
+      mobileSearchOverlay.classList.remove('active');
+      if(currentTab==='fifa'){
+        const idx = allStreams.findIndex(s=>s.url===ch.url);
+        if(idx>=0) loadStream(idx, true);
+      } else {
+        const idx = liveTVChannels.findIndex(s=>s.url===ch.url);
+        if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
+      }
+    };
+    mobileSearchResults.appendChild(div);
+  });
 });
 
 // =================================================================
