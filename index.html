@@ -61,7 +61,7 @@
 
     /* LAYOUT: Player + Sidebar */
     .ott-layout{display:flex;gap:20px;padding:0 24px 20px;flex:1 1 auto}
-    .player-col{flex:1;min-width:0}
+    .player-col{flex:1;min-width:0;scroll-margin-top:20px}
     .sidebar-col{width:340px;flex-shrink:0;display:flex;flex-direction:column;max-height:calc(100vh - 120px);position:sticky;top:80px}
     @media(max-width:1024px){.sidebar-col{display:none}.ott-layout{padding:0 16px 20px}}
     @media(max-width:768px){.ott-layout{padding:0 12px 20px}.hero{margin:12px;padding:16px 20px}.hero h1{font-size:20px}}
@@ -165,12 +165,8 @@
     .badge span{color:var(--accent)}
     @media(max-width:768px){footer{margin:12px 12px 70px;padding:16px}}
 
-    /* Mini Player (floating) */
-    .mini-player{position:fixed;bottom:20px;right:20px;width:320px;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);box-shadow:0 12px 40px rgba(0,0,0,0.7);z-index:50;display:none;transition:0.3s}
-    .mini-player video{width:100%;aspect-ratio:16/9;background:#000}
-    .mini-player .mp-close{position:absolute;top:6px;right:8px;background:rgba(0,0,0,0.6);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:grid;place-items:center}
-    @media(max-width:768px){.mini-player{width:200px;bottom:80px;right:10px}}
-    .mini-player.show{display:block}
+    /* Mini Player (floating) - DISABLED auto-pip */
+    .mini-player{display:none !important}
 
     /* BOTTOM NAV (mobile) - 4 buttons */
     .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;justify-content:space-around;padding:6px 4px 8px;background:rgba(8,11,20,0.95);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.04)}
@@ -325,8 +321,8 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MINI PLAYER -->
-<div class="mini-player" id="miniPlayer"><video id="miniVideo" playsinline></video><button class="mp-close" onclick="closeMini()">✕</button></div>
+<!-- MINI PLAYER - DISABLED completely -->
+<div class="mini-player" id="miniPlayer" style="display:none !important"><video id="miniVideo" playsinline></video><button class="mp-close" onclick="closeMini()">✕</button></div>
 
 <script>
 // =================================================================
@@ -373,10 +369,17 @@ let isFullscreen = false;
 // =================================================================
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+
+// Fixed scrollToPlayer: scrolls to player with perfect centering
 function scrollToPlayer(){ 
   const playerCol = document.getElementById('playerCol');
   if(playerCol) {
-    playerCol.scrollIntoView({behavior:'smooth', block:'start'});
+    const rect = playerCol.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const elementHeight = rect.height;
+    const offset = (viewportHeight - elementHeight) / 2 - 20;
+    const targetPosition = window.pageYOffset + rect.top - offset;
+    window.scrollTo({ top: Math.max(0, targetPosition), behavior: 'smooth' });
   }
 }
 
@@ -420,7 +423,6 @@ function loadStream(index, manual){
   if(manual) toast('▶ '+list[index].name);
   nowPlayingUrl = src;
   highlightNowPlaying();
-  // Auto scroll to player on channel click
   if(manual) scrollToPlayer();
 }
 
@@ -824,25 +826,10 @@ document.addEventListener('keydown', (e)=>{
 });
 
 // =================================================================
-// MINI PLAYER (floating when scroll down)
+// DISABLE AUTO MINI-PLAYER (completely removed)
 // =================================================================
-let miniVisible = false;
-const miniPlayer = document.getElementById('miniPlayer');
-window.addEventListener('scroll', ()=>{
-  const playerRect = document.querySelector('.player-col').getBoundingClientRect();
-  if(playerRect.bottom < 0 && !miniVisible){
-    miniPlayer.classList.add('show');
-    miniVideo.src = video.src;
-    miniVideo.currentTime = video.currentTime;
-    miniVideo.play().catch(()=>{});
-    miniVisible = true;
-  } else if(playerRect.top > 0 && miniVisible){
-    miniPlayer.classList.remove('show');
-    miniVideo.pause();
-    miniVisible = false;
-  }
-});
-function closeMini(){ miniPlayer.classList.remove('show'); miniVideo.pause(); miniVisible=false; }
+// The mini-player element is hidden via CSS (display:none !important)
+// No scroll event listener for auto-pip
 
 // =================================================================
 // INIT
@@ -879,7 +866,7 @@ window.shareSite = shareSite;
 window.copyLink = copyLink;
 window.scrollToPlayer = scrollToPlayer;
 window.switchTab = switchTab;
-window.closeMini = closeMini;
+window.closeMini = function(){};
 </script>
 </body>
 </html>
