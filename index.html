@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NSP Live TV – Premium OTT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +27,10 @@
     @keyframes glowPulse{0%,100%{box-shadow:0 0 10px rgba(0,229,255,0.3)}50%{box-shadow:0 0 30px rgba(0,229,255,0.7)}}
     .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease}
     .reveal.show{opacity:1;transform:translateY(0)}
+
+    /* WATERMARK */
+    .watermark{position:absolute;bottom:80px;right:24px;color:rgba(255,255,255,0.12);font-size:14px;font-weight:600;letter-spacing:1px;pointer-events:none;z-index:4;font-family:'Poppins',sans-serif;text-shadow:0 2px 10px rgba(0,0,0,0.5)}
+    @media(max-width:768px){.watermark{bottom:70px;right:14px;font-size:11px}}
 
     /* HEADER */
     header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:8px 24px;background:rgba(8,11,20,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05)}
@@ -117,7 +121,8 @@
     .sb-list .sb-item .sbi-badge{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--live);color:#fff;flex-shrink:0}
 
     /* OTT SECTIONS (horizontal scroll) */
-    .ott-sections{padding:0 24px 20px}
+    .ott-sections{padding:0 24px 20px;display:block}
+    .ott-sections.hidden{display:none}
     .ott-section{margin-bottom:28px}
     .ott-section .sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     .ott-section .sec-header h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
@@ -176,9 +181,17 @@
     /* misc */
     .grid-empty{text-align:center;color:var(--text2);padding:40px 10px}
     .muted-note{color:var(--text2);font-size:13px;padding:4px 2px}
+
+    /* FIFA & LIVE TV section visibility */
+    .fifa-content{display:block}
+    .livetv-content{display:none}
+    body.tab-livetv .fifa-content{display:none}
+    body.tab-livetv .livetv-content{display:block}
+    body.tab-fifa .fifa-content{display:block}
+    body.tab-fifa .livetv-content{display:none}
   </style>
 </head>
-<body>
+<body class="tab-fifa">
 
 <!-- HEADER -->
 <header>
@@ -210,6 +223,8 @@
     <div class="player-wrap">
       <div class="video-box">
         <video id="video" playsinline></video>
+        <!-- WATERMARK -->
+        <div class="watermark">Salman Farshi</div>
         <!-- Player Info Overlay -->
         <div class="player-info-overlay" id="playerInfoOverlay">
           <img class="pi-logo" id="piLogo" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23121827'/%3E%3Ctext x='50' y='62' font-size='40' text-anchor='middle'%3E📺%3C/text%3E%3C/svg%3E" alt="">
@@ -250,8 +265,13 @@
   </div>
 </div>
 
-<!-- OTT SECTIONS (horizontal rows) -->
-<div class="ott-sections" id="ottSections"></div>
+<!-- OTT SECTIONS (horizontal rows) - FIFA & LIVE TV separate -->
+<div class="fifa-content">
+  <div class="ott-sections" id="fifaSections"></div>
+</div>
+<div class="livetv-content">
+  <div class="ott-sections" id="livetvSections"></div>
+</div>
 
 <!-- FOOTER -->
 <footer class="reveal">
@@ -365,6 +385,7 @@ function loadStream(index, manual){
   if(manual) toast('▶ '+list[index].name);
   nowPlayingUrl = src;
   highlightNowPlaying();
+  scrollToPlayer();
 }
 
 let retryCount=0; const MAX_RETRY=2;
@@ -402,7 +423,7 @@ function loadLiveStream(index, list, manual){
   } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
   if(manual) toast('▶ '+stream.name);
   highlightNowPlaying();
-  updateSidebarList(list);
+  scrollToPlayer();
 }
 
 function handleStreamFailLive(list){
@@ -466,11 +487,6 @@ function updateSidebarHighlight(index, tab){
   items.forEach((el,i)=>{ el.classList.toggle('active', i===index); });
 }
 
-function updateSidebarList(list){
-  // rebuild if needed
-  buildSidebar(list);
-}
-
 // =================================================================
 // CATEGORY CHIPS (sidebar)
 // =================================================================
@@ -497,12 +513,34 @@ function buildCategoryChips(){
 }
 
 // =================================================================
-// OTT SECTIONS (horizontal rows)
+// OTT SECTIONS (horizontal rows) - separate for FIFA & Live TV
 // =================================================================
-function renderOttSections(){
-  const container = document.getElementById('ottSections');
+function renderFifaSections(){
+  const container = document.getElementById('fifaSections');
   container.innerHTML = '';
-  // generate 5 sections from categories
+  // FIFA uses allStreams
+  const sec = { name: 'FIFA চ্যানেল', channels: allStreams };
+  const section = document.createElement('div');
+  section.className = 'ott-section';
+  section.innerHTML = `<div class="sec-header"><h2>${escapeHtml(sec.name)}</h2></div><div class="ott-scroll" id="scroll-fifa"></div>`;
+  container.appendChild(section);
+  const scroll = section.querySelector('.ott-scroll');
+  sec.channels.forEach(ch=>{
+    const card = document.createElement('div');
+    card.className = 'ch-card' + (ch.url===nowPlayingUrl ? ' now-playing' : '');
+    const logo = ch.logo || FALLBACK_LOGO;
+    card.innerHTML = `<img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="cc-info"><div class="cc-name">${escapeHtml(ch.name)}</div><div class="cc-cat">${escapeHtml(ch.group||'')}</div><span class="cc-badge">লাইভ</span></div>`;
+    card.onclick = ()=>{
+      const idx = allStreams.findIndex(c=>c.url===ch.url);
+      if(idx>=0) loadStream(idx, true);
+    };
+    scroll.appendChild(card);
+  });
+}
+
+function renderLivetvSections(){
+  const container = document.getElementById('livetvSections');
+  container.innerHTML = '';
   const featuredCats = ['Sports','News','Entertainment','Movie','Kids','Islamic','International','Bangla'];
   const usedCats = new Set();
   let sections = [];
@@ -526,13 +564,8 @@ function renderOttSections(){
       const logo = ch.logo || FALLBACK_LOGO;
       card.innerHTML = `<img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="cc-info"><div class="cc-name">${escapeHtml(ch.name)}</div><div class="cc-cat">${escapeHtml(ch.group||'')}</div><span class="cc-badge">লাইভ</span></div>`;
       card.onclick = ()=>{
-        if(currentTab==='livetv'){
-          const idx = liveTVChannels.findIndex(c=>c.url===ch.url);
-          if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
-        } else {
-          const idx = allStreams.findIndex(c=>c.url===ch.url);
-          if(idx>=0) loadStream(idx, true);
-        }
+        const idx = liveTVChannels.findIndex(c=>c.url===ch.url);
+        if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
       };
       scroll.appendChild(card);
     });
@@ -596,7 +629,7 @@ function finalizeChannelsLoaded(fromCache){
   buildCategoryChips();
   currentFilteredList = liveTVChannels;
   buildSidebar(liveTVChannels);
-  renderOttSections();
+  renderLivetvSections();
   if(!fromCache) toast('✅ '+liveTVChannels.length+'টি চ্যানেল লোড হয়েছে');
   if(currentTab==='livetv' && liveTVChannels.length>0){
     if(!nowPlayingUrl || !liveTVChannels.find(c=>c.url===nowPlayingUrl)){
@@ -611,6 +644,7 @@ function finalizeChannelsLoaded(fromCache){
 function switchTab(tab){
   if(tab===currentTab) return;
   currentTab = tab;
+  document.body.className = tab==='fifa' ? 'tab-fifa' : 'tab-livetv';
   document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el=> el.classList.toggle('active', el.dataset.tab===tab));
   const heroTitle=document.getElementById('heroTitle'), heroDesc=document.getElementById('heroDesc');
   const sidebarCats = document.getElementById('sidebarCats');
@@ -618,17 +652,19 @@ function switchTab(tab){
     heroTitle.innerHTML='FIFA World Cup <span class="vs">·</span> লাইভ';
     heroDesc.textContent='স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে';
     sidebarCats.style.display='none';
-    // hide ott sections? but keep
-    document.getElementById('ottSections').style.display='block';
+    renderFifaSections();
     buildSidebar(allStreams);
     if(allStreams.length>0){ if(currentStreamIndex>=allStreams.length) currentStreamIndex=0; loadStream(currentStreamIndex,false); }
   } else {
     heroTitle.innerHTML='Live TV <span class="vs">·</span> আইপি টিভি';
     heroDesc.textContent='বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
     sidebarCats.style.display='flex';
-    document.getElementById('ottSections').style.display='block';
     if(liveTVChannels.length===0){ fetchM3U(); }
-    else { buildSidebar(currentFilteredList.length?currentFilteredList:liveTVChannels); if(liveTVChannels.length>0) loadLiveStream(liveTvStreamIndex, currentFilteredList.length?currentFilteredList:liveTVChannels, false); }
+    else { 
+      buildSidebar(currentFilteredList.length?currentFilteredList:liveTVChannels); 
+      renderLivetvSections();
+      if(liveTVChannels.length>0) loadLiveStream(liveTvStreamIndex, currentFilteredList.length?currentFilteredList:liveTVChannels, false); 
+    }
   }
 }
 
@@ -646,7 +682,15 @@ fsBtn.onclick = ()=>{
   if(!document.fullscreenElement){ (box.requestFullscreen||box.webkitRequestFullscreen).call(box); isFullscreen=true; }
   else { document.exitFullscreen(); isFullscreen=false; }
 };
-pipBtn.onclick = async ()=>{ try{ if(document.pictureInPictureElement) await document.exitPictureInPicture(); else await video.requestPictureInPicture(); }catch(e){ toast('PiP সাপোর্ট নয়'); } };
+pipBtn.onclick = async ()=>{
+  try {
+    if(document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      await video.requestPictureInPicture();
+    }
+  } catch(e){ toast('PiP সাপোর্ট নয়'); }
+};
 
 // =================================================================
 // SHARE / COPY
@@ -711,6 +755,8 @@ function closeMini(){ miniPlayer.classList.remove('show'); miniVideo.pause(); mi
 window.addEventListener('load', ()=>{
   document.querySelectorAll('#mainNav a, #bottomNav a').forEach(el=> el.classList.toggle('active', el.dataset.tab==='fifa'));
   document.getElementById('sidebarCats').style.display='none';
+  document.body.className = 'tab-fifa';
+  renderFifaSections();
   buildSidebar(allStreams);
   if(allStreams.length>0) loadStream(0, false);
   fetchM3U(); // background fetch
