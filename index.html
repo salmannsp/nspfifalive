@@ -101,6 +101,17 @@
     .extra-actions{display:flex;gap:6px;padding:4px 16px 12px;flex-wrap:wrap;background:var(--card);border-top:1px solid rgba(255,255,255,0.04)}
     .extra-actions .btn-ghost{padding:4px 14px;font-size:12px;border-radius:8px}
 
+    /* VPN INFO CARD */
+    .vpn-info-card{margin:10px 0 0;padding:14px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(0,163,255,0.04));border:1px solid rgba(0,229,255,0.15);display:flex;align-items:flex-start;gap:14px;backdrop-filter:blur(4px)}
+    .vpn-info-card .vpn-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+    .vpn-info-card .vpn-content{flex:1}
+    .vpn-info-card .vpn-title{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:2px}
+    .vpn-info-card .vpn-desc{font-size:12px;color:var(--text2);line-height:1.5}
+    .vpn-info-card .vpn-desc strong{color:var(--success)}
+    .vpn-info-card .vpn-btn{background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.2);color:var(--accent);padding:4px 14px;border-radius:30px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;margin-top:4px;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+    .vpn-info-card .vpn-btn:hover{background:rgba(0,229,255,0.2);transform:translateY(-1px)}
+    @media(max-width:768px){.vpn-info-card{padding:12px 14px;gap:10px}.vpn-info-card .vpn-icon{font-size:22px}.vpn-info-card .vpn-title{font-size:13px}.vpn-info-card .vpn-desc{font-size:11px}}
+
     /* SIDEBAR */
     .sidebar-col .sb-search{position:relative;margin-bottom:14px}
     .sidebar-col .sb-search input{width:100%;background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:40px;padding:10px 16px 10px 40px;font-family:inherit;color:var(--text);font-size:13px;outline:none;transition:0.25s}
@@ -165,7 +176,7 @@
     .badge span{color:var(--accent)}
     @media(max-width:768px){footer{margin:12px 12px 70px;padding:16px}}
 
-    /* Mini Player (floating) - DISABLED auto-pip */
+    /* Mini Player - DISABLED */
     .mini-player{display:none !important}
 
     /* BOTTOM NAV (mobile) - 4 buttons */
@@ -264,6 +275,18 @@
         <button class="ctrl rotate-btn" id="rotateBtn" title="Rotate to Landscape">↻</button>
         <div class="quality-ind"><span class="conn-dot" id="connDot"></span><span id="connText">সংযোগ: ভালো</span> · <span id="qualityText">HD</span></div>
       </div>
+      <!-- VPN INFO CARD -->
+      <div class="vpn-info-card" id="vpnInfoCard">
+        <div class="vpn-icon">🛡️</div>
+        <div class="vpn-content">
+          <div class="vpn-title">🔒 VPN চালু করার পরামর্শ</div>
+          <div class="vpn-desc">
+            <strong>বাফারিং বা স্ট্রিম না চললে?</strong> আপনার আইএসপি হয়তো থ্রটলিং করছে। 
+            <strong>১.১.১.১ (Cloudflare WARP)</strong> বা যেকোনো VPN চালু করে দেখুন — তখন স্ট্রিম মসৃণ হবে।
+          </div>
+          <button class="vpn-btn" onclick="window.open('https://1.1.1.1/', '_blank')">🔗 ১.১.১.১ ডাউনলোড করুন</button>
+        </div>
+      </div>
       <div class="extra-actions">
         <button class="btn btn-ghost" onclick="retryStream()">🔄 রিফ্রেশ</button>
         <button class="btn btn-ghost" onclick="copyLink()">📋 লিংক কপি</button>
@@ -321,7 +344,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MINI PLAYER - DISABLED completely -->
+<!-- MINI PLAYER - DISABLED -->
 <div class="mini-player" id="miniPlayer" style="display:none !important"><video id="miniVideo" playsinline></video><button class="mp-close" onclick="closeMini()">✕</button></div>
 
 <script>
