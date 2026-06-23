@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     :root{--bg:#080B14;--card:#121827;--card2:#1A2336;--accent:#00E5FF;--accent2:#00A3FF;--live:#FF3B30;--success:#00FF88;--warning:#FFD700;--text:#FFFFFF;--text2:#A7B1C2;--radius:24px;--shadow:0 20px 60px rgba(0,0,0,0.7)}
@@ -363,7 +362,7 @@ const DEFAULT_STREAMS = [
   { name: "Bein Sports 3", url: "https://next.badinan.xyz/nexttv/FHD/playlist.m3u8", live: true, logo: "", group: "Sports" },
   { name: "Bein Sports 1", url: "http://ua.online24.pm/play/1101/350B326FB34F4B8/video.m3u8", live: true, logo: "", group: "Sports" },
   { name: "Ptv Sports", url: "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8", live: true, logo: "", group: "Sports" },
-  { name: "D Sports", url: "http://starhub.pro/live/farhat-3379/67897-913379/745269.ts", live: true, logo: "", group: "Sports" }
+  { name: "D Sports", url: "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8", live: true, logo: "", group: "Sports" }
 ];
 
 const M3U_URL = "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u";
@@ -378,7 +377,6 @@ let currentTab = 'fifa';
 let currentStreamIndex = 0;
 let liveTvStreamIndex = 0;
 let hls = null;
-let mpegtsPlayer = null;
 const video = document.getElementById('video');
 const miniVideo = document.getElementById('miniVideo');
 const spinner = document.getElementById('spinner');
@@ -422,88 +420,6 @@ video.addEventListener('playing',()=>{ hideSpinner(); setConn('good'); updateQua
 video.addEventListener('waiting',()=> showSpinner('বাফার হচ্ছে...'));
 
 // =================================================================
-// SMART STREAM DETECTION + COMMON PLAYBACK ENGINE
-// =================================================================
-// Detects the stream type from the URL so the correct engine (HLS.js,
-// MPEGTS.js, or native HTML5 video) gets used automatically.
-function detectStreamType(url){
-  if(!url) return 'native';
-  const clean = url.split('?')[0].split('#')[0].toLowerCase();
-  if(clean.includes('.m3u8')) return 'hls';
-  if(clean.includes('.ts')) return 'ts';
-  if(clean.includes('.mp4')) return 'mp4';
-  return 'native';
-}
-
-// Fully tears down any existing HLS / MPEGTS instance and resets the
-// <video> element so switching streams never leaks memory or leaves
-// a stale source attached.
-function destroyPlayers(){
-  if(hls){ try{ hls.destroy(); }catch(e){} hls=null; }
-  if(mpegtsPlayer){ try{ mpegtsPlayer.destroy(); }catch(e){} mpegtsPlayer=null; }
-  try{ video.pause(); }catch(e){}
-  video.removeAttribute('src');
-  try{ video.load(); }catch(e){}
-}
-
-// Common entry point used by both the FIFA loader and the Live TV
-// loader. Cleans up old players, detects the stream type, then wires
-// up the correct playback engine. onReady fires once playback starts
-// successfully; onFail fires on a fatal/unrecoverable error.
-function playStream(url, onReady, onFail){
-  destroyPlayers();
-  const type = detectStreamType(url);
-
-  if(type === 'hls'){
-    if(window.Hls && Hls.isSupported()){
-      hls = new Hls({ maxBufferLength:30, manifestLoadingTimeOut:12000 });
-      hls.loadSource(url);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ video.play().catch(()=>{}); onReady && onReady(); });
-      hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) onFail && onFail(); });
-    } else if(video.canPlayType('application/vnd.apple.mpegurl')){
-      video.src = url;
-      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-      video.addEventListener('error', ()=> onFail && onFail(), {once:true});
-    } else { onFail && onFail(); }
-    return;
-  }
-
-  if(type === 'ts'){
-    if(window.mpegts && mpegts.getFeatureList && mpegts.isSupported()){
-      try{
-        mpegtsPlayer = mpegts.createPlayer({ type:'mse', isLive:true, url:url }, {
-          enableWorker:true,
-          enableStashBuffer:false,
-          liveBufferLatencyChasing:true,   // low-latency live playback
-          liveBufferLatencyMaxLatency:3.0,
-          liveBufferLatencyMinRemain:0.5,
-          autoCleanupSourceBuffer:true,    // auto buffer management
-          lazyLoad:false
-        });
-        mpegtsPlayer.attachMediaElement(video);
-        mpegtsPlayer.on(mpegts.Events.ERROR, ()=>{ onFail && onFail(); });
-        video.addEventListener('loadeddata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-        mpegtsPlayer.load();
-        // auto-recovery: if MSE stalls right after load, nudge playback once
-        video.addEventListener('canplay', ()=>{ video.play().catch(()=>{}); }, {once:true});
-      } catch(e){ onFail && onFail(); }
-    } else {
-      // MPEGTS.js unsupported in this browser → fall back to native video
-      video.src = url;
-      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-      video.addEventListener('error', ()=> onFail && onFail(), {once:true});
-    }
-    return;
-  }
-
-  // .mp4 and any other direct stream → native HTML5 video
-  video.src = url;
-  video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-  video.addEventListener('error', ()=> onFail && onFail(), {once:true});
-}
-
-// =================================================================
 // LOAD STREAMS (FIFA)
 // =================================================================
 function loadStream(index, manual){
@@ -515,11 +431,18 @@ function loadStream(index, manual){
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'fifa');
   const src = list[index].url;
-  playStream(
-    src,
-    ()=>{ hideSpinner(); updateQuality(); updatePiInfo(list[index]); },
-    ()=> handleStreamFailFifa()
-  );
+  if(hls){ hls.destroy(); hls=null; }
+  if(window.Hls && Hls.isSupported()){
+    hls = new Hls({ maxBufferLength:30, manifestLoadingTimeOut:12000 });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ hideSpinner(); video.play().catch(()=>{}); updateQuality(); updatePiInfo(list[index]); });
+    hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) handleStreamFailFifa(); });
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src = src;
+    video.addEventListener('loadedmetadata', ()=>{ hideSpinner(); video.play().catch(()=>{}); updatePiInfo(list[index]); }, {once:true});
+    video.addEventListener('error', handleStreamFailFifa, {once:true});
+  } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
   if(manual) toast('▶ '+list[index].name);
   nowPlayingUrl = src;
   highlightNowPlaying();
@@ -546,12 +469,19 @@ function loadLiveStream(index, list, manual){
   hideError();
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'livetv');
+  if(hls){ hls.destroy(); hls=null; }
   const src = stream.url;
-  playStream(
-    src,
-    ()=>{ hideSpinner(); updateQuality(); updatePiInfo(stream); },
-    ()=> handleStreamFailLive(list)
-  );
+  if(window.Hls && Hls.isSupported()){
+    hls = new Hls({ maxBufferLength:30, manifestLoadingTimeOut:12000 });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ hideSpinner(); video.play().catch(()=>{}); updateQuality(); updatePiInfo(stream); });
+    hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) handleStreamFailLive(list); });
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src = src;
+    video.addEventListener('loadedmetadata', ()=>{ hideSpinner(); video.play().catch(()=>{}); updatePiInfo(stream); }, {once:true});
+    video.addEventListener('error', ()=>handleStreamFailLive(list), {once:true});
+  } else { showError('ব্রাউজার সাপোর্ট করে না।'); }
   if(manual) toast('▶ '+stream.name);
   highlightNowPlaying();
   if(manual) scrollToPlayer();
