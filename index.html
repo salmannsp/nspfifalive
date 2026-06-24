@@ -170,6 +170,85 @@
     .ott-scroll .ch-card.now-playing{border-color:var(--success);box-shadow:0 0 0 1px var(--success)}
     @media(max-width:768px){.ott-sections{padding:0 12px 20px}.ott-scroll .ch-card{flex:0 0 140px}}
 
+    /* ✅ মোবাইল চ্যানেল গ্রিড - ৫ কলাম লেআউট */
+    .mobile-channels-grid{
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:10px;
+      padding:12px;
+      max-height:calc(100vh - 280px);
+      overflow-y:auto;
+      margin-bottom:8px;
+    }
+    .mobile-channels-grid::-webkit-scrollbar{width:4px}
+    .mobile-channels-grid::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+    
+    .mobile-channel-item{
+      position:relative;
+      border-radius:12px;
+      overflow:hidden;
+      cursor:pointer;
+      border:2px solid rgba(255,255,255,0.06);
+      background:var(--card);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:6px;
+      aspect-ratio:1/1;
+      transition:all 0.2s ease;
+    }
+    .mobile-channel-item:hover{
+      border-color:var(--accent);
+      background:var(--card2);
+      transform:translateY(-2px);
+    }
+    .mobile-channel-item img{
+      width:100%;
+      height:70%;
+      object-fit:contain;
+      padding:4px;
+    }
+    .mci-name{
+      font-size:10px;
+      font-weight:500;
+      color:var(--text2);
+      text-align:center;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      width:100%;
+      padding:0 2px;
+      transition:color 0.2s ease;
+    }
+    /* ✅ অ্যাক্টিভ চ্যানেল স্টাইল */
+    .mobile-channel-item.active{
+      border:2px solid var(--accent);
+      box-shadow:0 0 12px rgba(0,229,255,0.4);
+      transform:scale(1.05);
+      background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,163,255,0.05));
+    }
+    .mobile-channel-item.active .mci-name{
+      color:var(--accent);
+      font-weight:600;
+    }
+    
+    /* ✅ মোবাইল রেসপন্সিভ - ছোট ডিভাইসে ৪ কলাম */
+    @media(max-width:480px){
+      .mobile-channels-grid{
+        grid-template-columns:repeat(4, 1fr);
+        gap:8px;
+        padding:10px;
+      }
+      .mobile-channel-item{
+        padding:4px;
+      }
+      .mci-name{
+        font-size:9px;
+      }
+    }
+
     .settings-btn{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:8px;transition:0.2s}
     .settings-btn:hover{background:rgba(255,255,255,0.06);color:var(--text)}
     
@@ -333,6 +412,9 @@
 
 <div class="fifa-content"><div class="ott-sections" id="fifaSections"></div></div>
 <div class="livetv-content"><div class="ott-sections" id="livetvSections"></div></div>
+
+<!-- ✅ মোবাইল চ্যানেল গ্রিড -->
+<div class="mobile-channels-grid" id="mobileChannelsGrid"></div>
 
 <footer class="reveal" id="mainFooter">
   <div class="brand">NSP <b>Live TV</b></div>
@@ -584,6 +666,12 @@ function loadStream(index, manual){
   hideError();
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'fifa');
+  
+  // ✅ মোবাইল চ্যানেল গ্রিড অ্যাক্টিভ স্টেট আপডেট
+  document.querySelectorAll('.mobile-channel-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  
   const src = list[index].url;
   playStream(
     src,
@@ -615,6 +703,12 @@ function loadLiveStream(index, list, manual){
   hideError();
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'livetv');
+  
+  // ✅ মোবাইল চ্যানেল গ্রিড অ্যাক্টিভ স্টেট আপডেট
+  document.querySelectorAll('.mobile-channel-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  
   const src = stream.url;
   playStream(
     src,
@@ -649,6 +743,7 @@ function switchServer(serverId){
     buildSidebar(liveTVChannels);
     buildCategoryChips();
     renderLivetvSections();
+    buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
     if(currentTab === 'livetv' && liveTVChannels.length > 0){
       loadLiveStream(0, liveTVChannels, false);
     }
@@ -669,6 +764,7 @@ function switchServer(serverId){
       buildSidebar(liveTVChannels);
       buildCategoryChips();
       renderLivetvSections();
+      buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
       if(currentTab === 'livetv' && liveTVChannels.length > 0){
         loadLiveStream(0, liveTVChannels, false);
       }
@@ -913,8 +1009,61 @@ function highlightNowPlaying(){
 }
 
 // ============================================================
-// TAB SWITCHING
+// ✅ মোবাইল চ্যানেল গ্রিড বিল্ড করুন
 // ============================================================
+function buildMobileChannels(){
+  const mobileChGrid = document.getElementById('mobileChannelsGrid');
+  if(!mobileChGrid) return;
+  
+  // সম্পূর্ণভাবে ক্লিয়ার করুন
+  mobileChGrid.innerHTML = '';
+  
+  let channels;
+  if(currentTab === 'fifa') {
+    channels = allStreams;
+  } else {
+    channels = liveTVChannels;  // বর্তমান সার্ভারের চ্যানেল
+  }
+  
+  if(channels.length === 0) {
+    mobileChGrid.innerHTML = '<div class="muted-note" style="grid-column:1/-1;text-align:center;">কোন চ্যানেল পাওয়া যায়নি</div>';
+    return;
+  }
+  
+  channels.forEach((ch, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mobile-channel-item';
+    
+    // অ্যাক্টিভ স্টেট চেক করুন
+    let isActive = false;
+    if(currentTab === 'fifa' && currentStreamIndex === idx) {
+      isActive = true;
+      div.classList.add('active');
+    } else if(currentTab === 'livetv' && liveTvStreamIndex === idx) {
+      isActive = true;
+      div.classList.add('active');
+    }
+    
+    const logo = ch.logo || FALLBACK_LOGO;
+    const name = escapeHtml(ch.name);
+    
+    div.innerHTML = `
+      <img src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt="${name}" title="${name}">
+      <div class="mci-name">${name}</div>
+    `;
+    
+    div.onclick = () => {
+      if(currentTab === 'fifa') {
+        loadStream(idx, true);
+      } else {
+        loadLiveStream(idx, liveTVChannels, true);
+      }
+    };
+    
+    mobileChGrid.appendChild(div);
+  });
+}
+
 function switchTab(tab){
   if(tab===currentTab) return;
   currentTab = tab;
@@ -931,7 +1080,11 @@ function switchTab(tab){
     serverTabs.classList.remove('visible'); // 🟢 FIFA তে সার্ভার ট্যাব লুকান
     renderFifaSections();
     buildSidebar(allStreams);
+    buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
     if(allStreams.length>0){ if(currentStreamIndex>=allStreams.length) currentStreamIndex=0; loadStream(currentStreamIndex,false); }
+    // ✅ স্ক্রোল টপে রিসেট
+    const mobileChGrid = document.getElementById('mobileChannelsGrid');
+    if(mobileChGrid) mobileChGrid.scrollTop = 0;
   } else {
     heroTitle.innerHTML='Live TV <span class="vs">·</span> আইপি টিভি';
     heroDesc.textContent='বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
@@ -943,8 +1096,12 @@ function switchTab(tab){
     } else { 
       buildSidebar(currentFilteredList.length?currentFilteredList:liveTVChannels); 
       renderLivetvSections();
+      buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
       if(liveTVChannels.length>0) loadLiveStream(liveTvStreamIndex, currentFilteredList.length?currentFilteredList:liveTVChannels, false); 
     }
+    // ✅ স্ক্রোল টপে রিসেট
+    const mobileChGrid = document.getElementById('mobileChannelsGrid');
+    if(mobileChGrid) mobileChGrid.scrollTop = 0;
   }
 }
 
@@ -1103,6 +1260,7 @@ window.addEventListener('load', ()=>{
   // Load FIFA streams (manual channels)
   renderFifaSections();
   buildSidebar(allStreams);
+  buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড বিল্ড করুন
   if(allStreams.length>0) loadStream(0, false);
   
   // Initialize Server 1 as default for Live TV
