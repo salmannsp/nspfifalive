@@ -81,7 +81,6 @@
     .player-col{flex:1;min-width:0;scroll-margin-top:20px}
     .sidebar-col{width:340px;flex-shrink:0;display:flex;flex-direction:column;max-height:calc(100vh - 120px);position:sticky;top:80px}
     
-    /* ক্যাটাগরি সেকশন - ডেস্কটপে স্ক্রলযোগ্য ও বড় */
     .sidebar-col .sb-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;max-height:80px;overflow-y:auto;padding:4px 2px;align-content:flex-start}
     .sidebar-col .sb-cats::-webkit-scrollbar{width:3px}
     .sidebar-col .sb-cats::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px}
@@ -158,6 +157,8 @@
     .ott-section .sec-header h2::before{content:'';width:4px;height:18px;border-radius:4px;background:var(--accent)}
     .ott-section .sec-header .see-all{font-size:12px;color:var(--text2);cursor:pointer;transition:0.2s}
     .ott-section .sec-header .see-all:hover{color:var(--accent)}
+    
+    /* ✅ Desktop Channel Grid Optimization */
     .ott-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}
     .ott-scroll::-webkit-scrollbar{height:4px}
     .ott-scroll .ch-card{flex:0 0 180px;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:0.3s;scroll-snap-align:start}
@@ -168,86 +169,62 @@
     .ott-scroll .ch-card .cc-cat{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ott-scroll .ch-card .cc-badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--live);color:#fff;margin-top:4px}
     .ott-scroll .ch-card.now-playing{border-color:var(--success);box-shadow:0 0 0 1px var(--success)}
+    
+    /* ✅ Desktop Grid - 8 Columns at 1440px+ */
+    @media(min-width:1440px){
+      .ott-scroll{display:grid !important;grid-template-columns:repeat(8,1fr) !important;gap:14px !important;overflow-x:visible !important;padding:4px 2px 12px !important}
+      .ott-scroll .ch-card{flex:none !important;scroll-snap-align:none !important}
+    }
+    @media(min-width:1200px) and (max-width:1439px){
+      .ott-scroll{display:grid !important;grid-template-columns:repeat(6,1fr) !important;gap:14px !important;overflow-x:visible !important;padding:4px 2px 12px !important}
+      .ott-scroll .ch-card{flex:none !important;scroll-snap-align:none !important}
+    }
+    @media(min-width:1024px) and (max-width:1199px){
+      .ott-scroll{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:12px !important;overflow-x:visible !important}
+      .ott-scroll .ch-card{flex:none !important;scroll-snap-align:none !important}
+    }
+    
     @media(max-width:768px){.ott-sections{padding:0 12px 20px}.ott-scroll .ch-card{flex:0 0 140px}}
 
+    /* ✅ Favorites Section */
+    .favorites-section{margin-top:12px;padding:8px;border-radius:12px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);display:none}
+    .favorites-section.visible{display:block}
+    .fav-header{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px;padding:0 4px}
+    .fav-header .icon{font-size:14px}
+    .fav-scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 0;scroll-snap-type:x mandatory}
+    .fav-scroll::-webkit-scrollbar{height:3px}
+    .fav-scroll::-webkit-scrollbar-thumb{background:rgba(255,215,0,0.4);border-radius:10px}
+    .fav-card{flex:0 0 100px;aspect-ratio:1/1;background:var(--card2);border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,215,0,0.2);transition:all 0.2s ease;position:relative;scroll-snap-align:start}
+    .fav-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .fav-card img{width:100%;height:80%;object-fit:contain;padding:4px}
+    .fav-card-name{font-size:9px;font-weight:500;color:var(--text2);padding:3px 4px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;height:20%}
+    .fav-card .fav-remove{position:absolute;top:2px;right:2px;width:20px;height:20px;background:rgba(255,59,48,0.8);border:none;border-radius:50%;color:white;font-size:12px;cursor:pointer;opacity:0;transition:opacity 0.2s}
+    .fav-card:hover .fav-remove{opacity:1}
+    
+    @media(min-width:1440px){.fav-card{flex:0 0 130px}}
+    @media(max-width:480px){.fav-card{flex:0 0 80px}.fav-header{font-size:11px}}
+
     /* ✅ মোবাইল চ্যানেল গ্রিড - ৫ কলাম লেআউট */
-    .mobile-channels-grid{
-      display:grid;
-      grid-template-columns:repeat(5, 1fr);
-      gap:10px;
-      padding:12px;
-      max-height:calc(100vh - 280px);
-      overflow-y:auto;
-      margin-bottom:8px;
-    }
+    .mobile-channels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:12px;max-height:calc(100vh - 280px);overflow-y:auto;margin-bottom:8px}
     .mobile-channels-grid::-webkit-scrollbar{width:4px}
     .mobile-channels-grid::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
     
-    .mobile-channel-item{
-      position:relative;
-      border-radius:12px;
-      overflow:hidden;
-      cursor:pointer;
-      border:2px solid rgba(255,255,255,0.06);
-      background:var(--card);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      padding:6px;
-      aspect-ratio:1/1;
-      transition:all 0.2s ease;
-    }
-    .mobile-channel-item:hover{
-      border-color:var(--accent);
-      background:var(--card2);
-      transform:translateY(-2px);
-    }
-    .mobile-channel-item img{
-      width:100%;
-      height:70%;
-      object-fit:contain;
-      padding:4px;
-    }
-    .mci-name{
-      font-size:10px;
-      font-weight:500;
-      color:var(--text2);
-      text-align:center;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      width:100%;
-      padding:0 2px;
-      transition:color 0.2s ease;
-    }
-    /* ✅ অ্যাক্টিভ চ্যানেল স্টাইল */
-    .mobile-channel-item.active{
-      border:2px solid var(--accent);
-      box-shadow:0 0 12px rgba(0,229,255,0.4);
-      transform:scale(1.05);
-      background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,163,255,0.05));
-    }
-    .mobile-channel-item.active .mci-name{
-      color:var(--accent);
-      font-weight:600;
-    }
+    .mobile-channel-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;border:2px solid rgba(255,255,255,0.06);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:6px;aspect-ratio:1/1;transition:all 0.2s ease}
+    .mobile-channel-item:hover{border-color:var(--accent);background:var(--card2);transform:translateY(-2px)}
+    .mci-image{width:100%;height:70%;overflow:hidden;border-radius:8px}
+    .mci-image img{width:100%;height:100%;object-fit:contain;padding:4px}
     
-    /* ✅ মোবাইল রেসপন্সিভ - ছোট ডিভাইসে ৪ কলাম */
-    @media(max-width:480px){
-      .mobile-channels-grid{
-        grid-template-columns:repeat(4, 1fr);
-        gap:8px;
-        padding:10px;
-      }
-      .mobile-channel-item{
-        padding:4px;
-      }
-      .mci-name{
-        font-size:9px;
-      }
-    }
+    /* ✅ Mobile Favorite Button */
+    .mci-fav-btn{position:absolute;top:4px;right:4px;width:28px;height:28px;border:none;background:rgba(0,0,0,0.7);border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;opacity:0}
+    .mobile-channel-item:hover .mci-fav-btn{opacity:1}
+    .mci-fav-btn.favorited{opacity:1;background:rgba(255,215,0,0.8)}
+    .mci-fav-btn:active{transform:scale(1.2)}
+    
+    .mci-name{font-size:10px;font-weight:500;color:var(--text2);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;padding:0 2px;transition:color 0.2s ease}
+    .mobile-channel-item.active{border:2px solid var(--accent);box-shadow:0 0 12px rgba(0,229,255,0.4);transform:scale(1.05);background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,163,255,0.05))}
+    .mobile-channel-item.active .mci-name{color:var(--accent);font-weight:600}
+    
+    @media(max-width:480px){.mobile-channels-grid{grid-template-columns:repeat(4,1fr);gap:8px;padding:10px}.mobile-channel-item{padding:4px}.mci-name{font-size:9px}}
 
     .settings-btn{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:8px;transition:0.2s}
     .settings-btn:hover{background:rgba(255,255,255,0.06);color:var(--text)}
@@ -505,13 +482,12 @@ totalRef.on('value', (snapshot) => {
 // ============================================================
 const FALLBACK_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="16" fill="#1A2336"/><text x="50" y="62" font-size="40" text-anchor="middle">📺</text></svg>');
 
-// 🟢 FIFA MANUAL CHANNELS - এখানে আপনি নিজে চ্যানেল যোগ/বিয়োগ করবেন
+// 🟢 FIFA MANUAL CHANNELS
 const MANUAL_CHANNELS = [
   { name: "Somoy Tv FIFA", url: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8", logo: "", group: "🏆 FIFA World Cup" },
   { name: "trece FIFA", url: "https://live2.eu-north-1a.cf.dmcdn.net/sec2(rISEotUgGFxxQclRZ0DesH4SUOWmbhi8lDrPimh0BNhlQBR23fKXyReD-caCr0dCJS3ZDaHoXXFQ92MA0ZiTgJ2wYSptNW1ULwhUlmW35G_BpoduL52MzFgo_n-aSOof)/cloud/3/x9ksaba/s/live-720.m3u8", logo: "", group: "🏆 FIFA World Cup" },
   { name: "Ptv", url: "https://rakib-proxy.vercel.app/?url=https://pico.kheladekho.xyz/hls/bdixmasud/index.m3u8", logo: "", group: "🏆 FIFA World Cup" },
   { name: "Bein Sports 1", url: "https://proxy.rprakib.workers.dev/?url=https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8", logo: "", group: "🏆 FIFA World Cup" },
-  // ব্যাকআপ চ্যানেল (ডুপ্লিকেট নাম থাকলে আলাদা নাম)
   { name: "Bein Sports 1 (Backup)", url: "https://cp11.adabmedia.com/hls2/sport.m3u8", logo: "", group: "🏆 FIFA World Cup" },
   { name: "T Sports", url: "https://trs1.aynaott.com/tsports/index.m3u8", logo: "", group: "🏆 FIFA World Cup" },
   { name: "T Sports (Backup)", url: "https://bl.video.matchtv.ru/media/playlist/free_d46d0cf1712c0542ec7fd4f0808f600a_hd/17_89756005/1080/e6bef86de8a133cd7b27deb040758a00/4796141934.m3u8", logo: "", group: "🏆 FIFA World Cup" },
@@ -526,7 +502,7 @@ const MANUAL_CHANNELS = [
   { name: "BD-3 (HD)", url: "https://bl.video.matchtv.ru/media/playlist/free_d46d0cf1712c0542ec7fd4f0808f600a_hd/17_89756005/1080/e6bef86de8a133cd7b27deb040758a00/4796141934.m3u8", logo: "", group: "🏆 FIFA World Cup" }
 ];
 
-// 🟢 Server URLs (from rakib.html)
+// 🟢 Server URLs
 const SERVER_URLS = {
   1: 'MANUAL_SERVER_1',
   2: 'https://raw.githubusercontent.com/sm-monirulislam/SM-Live-TV/refs/heads/main/Combined_Live_TV.m3u',
@@ -565,16 +541,158 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 function scrollToPlayer(){ const playerCol = document.getElementById('playerCol'); if(playerCol){ const rect = playerCol.getBoundingClientRect(); const viewportHeight = window.innerHeight; const elementHeight = rect.height; const offset = (viewportHeight - elementHeight) / 2 - 20; const targetPosition = window.pageYOffset + rect.top - offset; window.scrollTo({ top: Math.max(0, targetPosition), behavior: 'smooth' }); } }
 
 // ============================================================
-// PLAYER CORE
+// ✅ CHANNEL NAME SANITIZATION
 // ============================================================
-function destroyPlayers(){
-  if(hls){ try{ hls.destroy(); }catch(e){} hls=null; }
-  if(mpegtsPlayer){ try{ mpegtsPlayer.destroy(); }catch(e){} mpegtsPlayer=null; }
-  try{ video.pause(); }catch(e){}
-  video.removeAttribute('src');
-  try{ video.load(); }catch(e){}
+function sanitizeChannelName(name){
+  if(!name || typeof name !== 'string') return 'Unknown';
+  name = name.trim();
+  if(name.length === 0) return 'Unknown';
+  if(name.length > 50) return 'Unknown';
+  
+  const invalidCharsRegex = /[\u0000-\u001F\u007F-\u009F\uFFFE\uFFFF]/g;
+  if(invalidCharsRegex.test(name)) return 'Unknown';
+  
+  const garbageRegex = /[àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ]{3,}/i;
+  if(garbageRegex.test(name)) return 'Unknown';
+  
+  name = name.replace(/[^\p{L}\p{N}\s\-\.\(\)]/gu, '');
+  if(name.length === 0) return 'Unknown';
+  
+  return name.length > 50 ? name.substring(0, 47) + '...' : name;
 }
 
+// ============================================================
+// ✅ PLAYER CLEANUP SYSTEM
+// ============================================================
+function destroyPlayer(){
+  try {
+    if(video){
+      video.pause();
+      video.src = '';
+      video.currentTime = 0;
+    }
+    if(hls && hls.media){
+      hls.destroy();
+      hls = null;
+    }
+    if(mpegtsPlayer){
+      mpegtsPlayer.destroy();
+      mpegtsPlayer = null;
+    }
+    if(window.abortController){
+      window.abortController.abort();
+      window.abortController = null;
+    }
+    if(video && video.buffered){
+      video.load();
+    }
+    hideSpinner();
+    hideError();
+    nowPlayingUrl = '';
+    currentStreamIndex = -1;
+    liveTvStreamIndex = -1;
+    console.log('✅ Player Destroyed');
+  } catch(e){
+    console.error('Error during player cleanup:', e);
+  }
+}
+
+// ============================================================
+// ✅ FAVORITES MANAGEMENT
+// ============================================================
+function toggleFavorite(url, tab){
+  const idx = favorites.findIndex(f => f.url === url);
+  if(idx >= 0){
+    favorites.splice(idx, 1);
+  } else {
+    favorites.push({ url, tab, timestamp: Date.now() });
+  }
+  localStorage.setItem('nsp_favorites', JSON.stringify(favorites));
+  updateFavoriteSections();
+}
+
+function isFavoritedChannel(url){
+  return favorites.some(f => f.url === url);
+}
+
+function getFavoriteChannels(tab){
+  const channels = tab === 'fifa' ? allStreams : liveTVChannels;
+  return channels.filter(ch => isFavoritedChannel(ch.url));
+}
+
+function updateFavoriteSections(){
+  if(currentTab === 'fifa'){
+    renderFifaSections();
+  } else {
+    renderLivetvSections();
+  }
+}
+
+function toggleFavoriteMobile(idx, tab){
+  const channels = tab === 'fifa' ? allStreams : liveTVChannels;
+  if(idx < 0 || idx >= channels.length) return;
+  
+  const channel = channels[idx];
+  toggleFavorite(channel.url, tab);
+  
+  const mobileItems = document.querySelectorAll('.mobile-channel-item');
+  if(mobileItems[idx]){
+    const btn = mobileItems[idx].querySelector('.mci-fav-btn');
+    const isFav = isFavoritedChannel(channel.url);
+    btn.textContent = isFav ? '⭐' : '☆';
+    btn.classList.toggle('favorited', isFav);
+  }
+}
+
+function createFavoriteCard(ch, tab){
+  const card = document.createElement('div');
+  card.className = 'fav-card';
+  const logo = ch.logo || FALLBACK_LOGO;
+  const name = sanitizeChannelName(ch.name);
+  
+  card.innerHTML = `
+    <img src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt="${name}">
+    <div class="fav-card-name">${escapeHtml(name)}</div>
+    <button class="fav-remove" onclick="event.stopPropagation(); toggleFavorite('${ch.url}', '${tab}')">✕</button>
+  `;
+  
+  card.onclick = () => {
+    if(tab === 'fifa') loadStream(allStreams.findIndex(s => s.url === ch.url), true);
+    else loadLiveStream(liveTVChannels.findIndex(s => s.url === ch.url), liveTVChannels, true);
+  };
+  
+  return card;
+}
+
+function createChannelCard(ch, tab){
+  const card = document.createElement('div');
+  card.className = 'ch-card';
+  const logo = ch.logo || FALLBACK_LOGO;
+  const name = sanitizeChannelName(ch.name);
+  
+  card.innerHTML = `
+    <img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt="">
+    <div class="cc-info">
+      <div class="cc-name">${escapeHtml(name)}</div>
+      <div class="cc-cat">${escapeHtml(ch.group || '')}</div>
+      <span class="cc-badge">লাইভ</span>
+    </div>
+  `;
+  
+  card.onclick = () => {
+    const idx = (tab === 'fifa' ? allStreams : liveTVChannels).findIndex(c => c.url === ch.url);
+    if(idx >= 0){
+      if(tab === 'fifa') loadStream(idx, true);
+      else loadLiveStream(idx, liveTVChannels, true);
+    }
+  };
+  
+  return card;
+}
+
+// ============================================================
+// PLAYER CORE
+// ============================================================
 function detectStreamType(url){
   if(!url) return 'native';
   const clean = url.split('?')[0].split('#')[0].toLowerCase();
@@ -590,9 +708,13 @@ function getDelaySeconds(mode){
   return 25;
 }
 
-function playStream(url, onReady, onFail){
-  destroyPlayers();
-  const type = detectStreamType(url);
+function playStream(src, onSuccess, onError){
+  // ✅ Destroy old player before starting new
+  if(hls) hls.destroy();
+  if(mpegtsPlayer) mpegtsPlayer.destroy();
+  
+  video.src = '';
+  const type = detectStreamType(src);
   const delaySec = getDelaySeconds(delayMode);
   document.getElementById('streamTypeLabel').textContent = type.toUpperCase();
 
@@ -608,15 +730,15 @@ function playStream(url, onReady, onFail){
         manifestLoadingTimeOut: 12000,
         levelLoadingTimeOut: 8000
       });
-      hls.loadSource(url);
+      hls.loadSource(src);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ video.play().catch(()=>{}); onReady && onReady(); });
-      hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) onFail && onFail(); });
+      hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ video.play().catch(()=>{}); onSuccess && onSuccess(); });
+      hls.on(Hls.Events.ERROR, (evt,data)=>{ if(data.fatal) onError && onError(); });
     } else if(video.canPlayType('application/vnd.apple.mpegurl')){
-      video.src = url;
-      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-      video.addEventListener('error', ()=> onFail && onFail(), {once:true});
-    } else { onFail && onFail(); }
+      video.src = src;
+      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onSuccess && onSuccess(); }, {once:true});
+      video.addEventListener('error', ()=> onError && onError(), {once:true});
+    } else { onError && onError(); }
     return;
   }
 
@@ -626,7 +748,7 @@ function playStream(url, onReady, onFail){
         mpegtsPlayer = mpegts.createPlayer({
           type: 'mse',
           isLive: true,
-          url: url,
+          url: src,
           liveBufferLatencyChasing: true,
           liveBufferLatencyMaxLatency: delaySec + 2,
           liveBufferLatencyMinRemain: 1.0,
@@ -636,26 +758,26 @@ function playStream(url, onReady, onFail){
           lazyLoad: false
         });
         mpegtsPlayer.attachMediaElement(video);
-        mpegtsPlayer.on(mpegts.Events.ERROR, ()=> onFail && onFail());
-        video.addEventListener('loadeddata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
+        mpegtsPlayer.on(mpegts.Events.ERROR, ()=> onError && onError());
+        video.addEventListener('loadeddata', ()=>{ video.play().catch(()=>{}); onSuccess && onSuccess(); }, {once:true});
         mpegtsPlayer.load();
         video.addEventListener('canplay', ()=>{ video.play().catch(()=>{}); }, {once:true});
-      } catch(e){ onFail && onFail(); }
+      } catch(e){ onError && onError(); }
     } else {
-      video.src = url;
-      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-      video.addEventListener('error', ()=> onFail && onFail(), {once:true});
+      video.src = src;
+      video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onSuccess && onSuccess(); }, {once:true});
+      video.addEventListener('error', ()=> onError && onError(), {once:true});
     }
     return;
   }
 
-  video.src = url;
-  video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onReady && onReady(); }, {once:true});
-  video.addEventListener('error', ()=> onFail && onFail(), {once:true});
+  video.src = src;
+  video.addEventListener('loadedmetadata', ()=>{ video.play().catch(()=>{}); onSuccess && onSuccess(); }, {once:true});
+  video.addEventListener('error', ()=> onError && onError(), {once:true});
 }
 
 // ============================================================
-// LOAD STREAMS (FIFA) - শুধু ম্যানুয়াল চ্যানেল
+// LOAD STREAMS (FIFA)
 // ============================================================
 let retryCount=0; const MAX_RETRY=2;
 function loadStream(index, manual){
@@ -667,7 +789,6 @@ function loadStream(index, manual){
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'fifa');
   
-  // ✅ মোবাইল চ্যানেল গ্রিড অ্যাক্টিভ স্টেট আপডেট
   document.querySelectorAll('.mobile-channel-item').forEach((el, i) => {
     el.classList.toggle('active', i === index);
   });
@@ -678,7 +799,7 @@ function loadStream(index, manual){
     ()=>{ hideSpinner(); updateQuality(); updatePiInfo(list[index]); },
     ()=> handleStreamFailFifa()
   );
-  if(manual) toast('▶ '+list[index].name);
+  if(manual) toast('▶ '+sanitizeChannelName(list[index].name));
   nowPlayingUrl = src;
   highlightNowPlaying();
   if(manual) scrollToPlayer();
@@ -704,7 +825,6 @@ function loadLiveStream(index, list, manual){
   showSpinner('স্ট্রিম লোড হচ্ছে...');
   updateSidebarHighlight(index, 'livetv');
   
-  // ✅ মোবাইল চ্যানেল গ্রিড অ্যাক্টিভ স্টেট আপডেট
   document.querySelectorAll('.mobile-channel-item').forEach((el, i) => {
     el.classList.toggle('active', i === index);
   });
@@ -715,7 +835,7 @@ function loadLiveStream(index, list, manual){
     ()=>{ hideSpinner(); updateQuality(); updatePiInfo(stream); },
     ()=> handleStreamFailLive(list)
   );
-  if(manual) toast('▶ '+stream.name);
+  if(manual) toast('▶ '+sanitizeChannelName(stream.name));
   highlightNowPlaying();
   if(manual) scrollToPlayer();
 }
@@ -736,14 +856,13 @@ function switchServer(serverId){
   
   const serverUrl = SERVER_URLS[serverId];
   if(serverUrl === 'MANUAL_SERVER_1'){
-    // Use manual FIFA channels for Live TV too
     liveTVChannels = [...MANUAL_CHANNELS];
     categories = ['🏆 FIFA World Cup'];
     currentFilteredList = liveTVChannels;
     buildSidebar(liveTVChannels);
     buildCategoryChips();
     renderLivetvSections();
-    buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
+    buildMobileChannels();
     if(currentTab === 'livetv' && liveTVChannels.length > 0){
       loadLiveStream(0, liveTVChannels, false);
     }
@@ -751,7 +870,6 @@ function switchServer(serverId){
     return;
   }
   
-  // Fetch from server URL
   showSpinner('প্লেলিস্ট লোড হচ্ছে...');
   fetch(serverUrl)
     .then(r => {
@@ -764,7 +882,7 @@ function switchServer(serverId){
       buildSidebar(liveTVChannels);
       buildCategoryChips();
       renderLivetvSections();
-      buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
+      buildMobileChannels();
       if(currentTab === 'livetv' && liveTVChannels.length > 0){
         loadLiveStream(0, liveTVChannels, false);
       }
@@ -833,7 +951,7 @@ function updateQuality(){
 
 function updatePiInfo(stream){
   if(!stream) return;
-  document.getElementById('piName').textContent = stream.name || 'NSP Live';
+  document.getElementById('piName').textContent = sanitizeChannelName(stream.name) || 'NSP Live';
   const logo = stream.logo || FALLBACK_LOGO;
   document.getElementById('piLogo').src = logo;
   document.getElementById('piViews').textContent = Math.floor(Math.random()*20+5)+'K দেখছেন';
@@ -841,26 +959,6 @@ function updatePiInfo(stream){
 
 video.addEventListener('playing',()=>{ hideSpinner(); setConn('good'); updateQuality(); });
 video.addEventListener('waiting',()=> showSpinner('বাফার হচ্ছে...'));
-
-// ============================================================
-// FAVORITES
-// ============================================================
-function toggleFavorite(url, event){
-  if(event) event.stopPropagation();
-  if(favorites.includes(url)){
-    favorites = favorites.filter(x => x !== url);
-  } else {
-    favorites.push(url);
-  }
-  localStorage.setItem('nsp_favorites', JSON.stringify(favorites));
-  // Rebuild sidebar
-  if(currentTab === 'fifa'){
-    buildSidebar(allStreams);
-  } else {
-    buildSidebar(currentFilteredList.length ? currentFilteredList : liveTVChannels);
-  }
-  toast(favorites.includes(url) ? '❤️ ফেভারিটে যোগ করা হলো' : '🤍 ফেভারিট থেকে সরানো হলো');
-}
 
 // ============================================================
 // SIDEBAR
@@ -871,37 +969,14 @@ function buildSidebar(list){
   if(!list||list.length===0){ container.innerHTML='<div class="muted-note">কোন চ্যানেল নেই</div>'; return; }
   const frag = document.createDocumentFragment();
   
-  // Add Favorites filter if in Live TV mode
-  if(currentTab === 'livetv'){
-    const favFilter = document.createElement('div');
-    favFilter.className = 'cat-chip' + (document.querySelector('.sb-cats .cat-chip.active')?.textContent === '❤️ ফেভারিট' ? ' active' : '');
-    favFilter.textContent = '❤️ ফেভারিট';
-    favFilter.style.marginBottom = '8px';
-    favFilter.style.cursor = 'pointer';
-    favFilter.style.padding = '4px 14px';
-    favFilter.style.borderRadius = '30px';
-    favFilter.style.background = 'var(--card)';
-    favFilter.style.border = '1px solid rgba(255,255,255,0.04)';
-    favFilter.style.color = 'var(--text2)';
-    favFilter.style.fontSize = '11px';
-    favFilter.style.fontWeight = '500';
-    favFilter.onclick = function(){
-      document.querySelectorAll('.sb-cats .cat-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      const favList = liveTVChannels.filter(ch => favorites.includes(ch.url));
-      buildSidebar(favList.length ? favList : [{ name: 'কোন ফেভারিট নেই', url: '', group: '', logo: '' }]);
-    };
-    // Add to cats
-    document.getElementById('sidebarCats').appendChild(favFilter);
-  }
-  
   list.forEach((ch,i)=>{
     const div = document.createElement('div');
     div.className = 'sb-item' + (ch.url === nowPlayingUrl && ch.url ? ' active' : '');
     div.dataset.url = ch.url;
     const logo = ch.logo || FALLBACK_LOGO;
-    const isFav = favorites.includes(ch.url);
-    div.innerHTML = `<img class="sbi-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="sbi-info"><div class="sbi-name">${escapeHtml(ch.name)}</div><div class="sbi-cat">${escapeHtml(ch.group||'')}</div></div><span class="fav-star" onclick="toggleFavorite('${ch.url}', event)">${isFav ? '❤️' : '🤍'}</span><span class="sbi-badge">লাইভ</span>`;
+    const isFav = isFavoritedChannel(ch.url);
+    const name = sanitizeChannelName(ch.name);
+    div.innerHTML = `<img class="sbi-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="sbi-info"><div class="sbi-name">${escapeHtml(name)}</div><div class="sbi-cat">${escapeHtml(ch.group||'')}</div></div><span class="fav-star" onclick="event.stopPropagation(); toggleFavorite('${ch.url}', '${currentTab}')">${isFav ? '❤️' : '🤍'}</span><span class="sbi-badge">লাইভ</span>`;
     div.onclick = ()=>{
       if(currentTab==='fifa'){
         const idx = allStreams.findIndex(s=>s.url===ch.url);
@@ -944,59 +1019,98 @@ function buildCategoryChips(){
 }
 
 // ============================================================
-// OTT SECTIONS
+// OTT SECTIONS - with Favorites
 // ============================================================
 function renderFifaSections(){
   const container = document.getElementById('fifaSections');
   container.innerHTML = '';
+  
+  // ✅ First: Favorites Section
+  const favChannels = getFavoriteChannels('fifa');
+  if(favChannels.length > 0){
+    const favSection = document.createElement('div');
+    favSection.className = 'favorites-section visible';
+    favSection.innerHTML = `
+      <div class="fav-header">
+        <span class="icon">⭐</span>
+        <span>Favorites</span>
+      </div>
+      <div class="fav-scroll" id="fav-fifa-scroll"></div>
+    `;
+    container.appendChild(favSection);
+    
+    const favScroll = favSection.querySelector('.fav-scroll');
+    favChannels.forEach(ch => {
+      const card = createFavoriteCard(ch, 'fifa');
+      favScroll.appendChild(card);
+    });
+  }
+  
+  // ✅ Then: Regular FIFA Channels (excluding favorites)
   const sec = { name: 'FIFA চ্যানেল', channels: allStreams };
   const section = document.createElement('div');
   section.className = 'ott-section';
   section.innerHTML = `<div class="sec-header"><h2>${escapeHtml(sec.name)}</h2></div><div class="ott-scroll" id="scroll-fifa"></div>`;
   container.appendChild(section);
+  
   const scroll = section.querySelector('.ott-scroll');
-  sec.channels.forEach(ch=>{
-    const card = document.createElement('div');
-    card.className = 'ch-card' + (ch.url===nowPlayingUrl ? ' now-playing' : '');
-    const logo = ch.logo || FALLBACK_LOGO;
-    card.innerHTML = `<img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="cc-info"><div class="cc-name">${escapeHtml(ch.name)}</div><div class="cc-cat">${escapeHtml(ch.group||'')}</div><span class="cc-badge">লাইভ</span></div>`;
-    card.onclick = ()=>{
-      const idx = allStreams.findIndex(c=>c.url===ch.url);
-      if(idx>=0) loadStream(idx, true);
-    };
-    scroll.appendChild(card);
+  sec.channels.forEach(ch => {
+    if(!isFavoritedChannel(ch.url)){
+      const card = createChannelCard(ch, 'fifa');
+      scroll.appendChild(card);
+    }
   });
 }
 
 function renderLivetvSections(){
   const container = document.getElementById('livetvSections');
   container.innerHTML = '';
+  
+  // ✅ First: Favorites Section
+  const favChannels = getFavoriteChannels('livetv');
+  if(favChannels.length > 0){
+    const favSection = document.createElement('div');
+    favSection.className = 'favorites-section visible';
+    favSection.innerHTML = `
+      <div class="fav-header">
+        <span class="icon">⭐</span>
+        <span>Favorites</span>
+      </div>
+      <div class="fav-scroll" id="fav-livetv-scroll"></div>
+    `;
+    container.appendChild(favSection);
+    
+    const favScroll = favSection.querySelector('.fav-scroll');
+    favChannels.forEach(ch => {
+      const card = createFavoriteCard(ch, 'livetv');
+      favScroll.appendChild(card);
+    });
+  }
+  
+  // ✅ Then: Regular categories (excluding favorites)
   const featuredCats = ['Sports','News','Entertainment','Movie','Kids','Islamic','International','Bangla'];
   const usedCats = new Set();
   let sections = [];
   for(const cat of featuredCats){
-    const chs = liveTVChannels.filter(ch => ch.group && ch.group.toLowerCase().includes(cat.toLowerCase()));
+    const chs = liveTVChannels.filter(ch => 
+      ch.group && ch.group.toLowerCase().includes(cat.toLowerCase()) && 
+      !isFavoritedChannel(ch.url)
+    );
     if(chs.length>0 && !usedCats.has(cat)){ sections.push({name:cat, channels:chs}); usedCats.add(cat); }
     if(sections.length>=6) break;
   }
   if(sections.length===0 && liveTVChannels.length>0){
-    sections.push({name:'সব চ্যানেল', channels:liveTVChannels.slice(0,20)});
+    sections.push({name:'সব চ্যানেল', channels:liveTVChannels.filter(ch => !isFavoritedChannel(ch.url)).slice(0,20)});
   }
   sections.forEach(sec=>{
+    if(sec.channels.length === 0) return;
     const section = document.createElement('div');
     section.className = 'ott-section';
     section.innerHTML = `<div class="sec-header"><h2>${escapeHtml(sec.name)}</h2><span class="see-all">সব দেখুন →</span></div><div class="ott-scroll" id="scroll-${sec.name.replace(/\s/g,'')}"></div>`;
     container.appendChild(section);
     const scroll = section.querySelector('.ott-scroll');
     sec.channels.slice(0,15).forEach(ch=>{
-      const card = document.createElement('div');
-      card.className = 'ch-card' + (ch.url===nowPlayingUrl ? ' now-playing' : '');
-      const logo = ch.logo || FALLBACK_LOGO;
-      card.innerHTML = `<img class="cc-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div class="cc-info"><div class="cc-name">${escapeHtml(ch.name)}</div><div class="cc-cat">${escapeHtml(ch.group||'')}</div><span class="cc-badge">লাইভ</span></div>`;
-      card.onclick = ()=>{
-        const idx = liveTVChannels.findIndex(c=>c.url===ch.url);
-        if(idx>=0) loadLiveStream(idx, liveTVChannels, true);
-      };
+      const card = createChannelCard(ch, 'livetv');
       scroll.appendChild(card);
     });
   });
@@ -1009,21 +1123,15 @@ function highlightNowPlaying(){
 }
 
 // ============================================================
-// ✅ মোবাইল চ্যানেল গ্রিড বিল্ড করুন
+// ✅ MOBILE CHANNEL GRID
 // ============================================================
 function buildMobileChannels(){
   const mobileChGrid = document.getElementById('mobileChannelsGrid');
   if(!mobileChGrid) return;
   
-  // সম্পূর্ণভাবে ক্লিয়ার করুন
   mobileChGrid.innerHTML = '';
   
-  let channels;
-  if(currentTab === 'fifa') {
-    channels = allStreams;
-  } else {
-    channels = liveTVChannels;  // বর্তমান সার্ভারের চ্যানেল
-  }
+  let channels = currentTab === 'fifa' ? allStreams : liveTVChannels;
   
   if(channels.length === 0) {
     mobileChGrid.innerHTML = '<div class="muted-note" style="grid-column:1/-1;text-align:center;">কোন চ্যানেল পাওয়া যায়নি</div>';
@@ -1034,75 +1142,93 @@ function buildMobileChannels(){
     const div = document.createElement('div');
     div.className = 'mobile-channel-item';
     
-    // অ্যাক্টিভ স্টেট চেক করুন
-    let isActive = false;
-    if(currentTab === 'fifa' && currentStreamIndex === idx) {
-      isActive = true;
-      div.classList.add('active');
-    } else if(currentTab === 'livetv' && liveTvStreamIndex === idx) {
-      isActive = true;
-      div.classList.add('active');
-    }
+    let isActive = (currentTab === 'fifa' && currentStreamIndex === idx) ||
+                   (currentTab === 'livetv' && liveTvStreamIndex === idx);
+    if(isActive) div.classList.add('active');
     
     const logo = ch.logo || FALLBACK_LOGO;
-    const name = escapeHtml(ch.name);
+    const name = sanitizeChannelName(ch.name);
+    
+    // ✅ Favorite Button
+    const isFavorite = isFavoritedChannel(ch.url);
+    const favClass = isFavorite ? 'favorited' : '';
     
     div.innerHTML = `
-      <img src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt="${name}" title="${name}">
-      <div class="mci-name">${name}</div>
+      <div class="mci-image">
+        <img src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt="${name}" title="${name}">
+      </div>
+      <div class="mci-name">${escapeHtml(name)}</div>
+      <button class="mci-fav-btn ${favClass}" onclick="event.stopPropagation(); toggleFavoriteMobile(${idx}, '${currentTab}')">
+        ${isFavorite ? '⭐' : '☆'}
+      </button>
     `;
     
     div.onclick = () => {
-      if(currentTab === 'fifa') {
-        loadStream(idx, true);
-      } else {
-        loadLiveStream(idx, liveTVChannels, true);
-      }
+      if(currentTab === 'fifa') loadStream(idx, true);
+      else loadLiveStream(idx, liveTVChannels, true);
     };
     
     mobileChGrid.appendChild(div);
   });
 }
 
+// ============================================================
+// TAB SWITCHING - with Player Cleanup
+// ============================================================
 function switchTab(tab){
-  if(tab===currentTab) return;
-  currentTab = tab;
-  document.body.className = tab==='fifa' ? 'tab-fifa' : 'tab-livetv';
-  document.querySelectorAll('#desktopTabs a, #bottomNav a').forEach(el => el.classList.toggle('active', el.dataset.tab===tab));
-  const heroTitle=document.getElementById('heroTitle'), heroDesc=document.getElementById('heroDesc');
-  const sidebarCats = document.getElementById('sidebarCats');
-  const serverTabs = document.getElementById('serverTabsWrap');
+  if(tab === currentTab) return;
   
-  if(tab==='fifa'){
-    heroTitle.innerHTML='FIFA World Cup <span class="vs">·</span> লাইভ';
-    heroDesc.textContent='স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে';
-    sidebarCats.style.display='none';
-    serverTabs.classList.remove('visible'); // 🟢 FIFA তে সার্ভার ট্যাব লুকান
-    renderFifaSections();
-    buildSidebar(allStreams);
-    buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
-    if(allStreams.length>0){ if(currentStreamIndex>=allStreams.length) currentStreamIndex=0; loadStream(currentStreamIndex,false); }
-    // ✅ স্ক্রোল টপে রিসেট
-    const mobileChGrid = document.getElementById('mobileChannelsGrid');
-    if(mobileChGrid) mobileChGrid.scrollTop = 0;
-  } else {
-    heroTitle.innerHTML='Live TV <span class="vs">·</span> আইপি টিভি';
-    heroDesc.textContent='বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
-    sidebarCats.style.display='flex';
-    serverTabs.classList.add('visible'); // 🟢 Live TV তে সার্ভার ট্যাব দেখান
-    if(liveTVChannels.length===0){ 
-      // Load default server
-      switchServer(currentServer);
-    } else { 
-      buildSidebar(currentFilteredList.length?currentFilteredList:liveTVChannels); 
-      renderLivetvSections();
-      buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড আপডেট
-      if(liveTVChannels.length>0) loadLiveStream(liveTvStreamIndex, currentFilteredList.length?currentFilteredList:liveTVChannels, false); 
+  // ✅ Destroy old player first
+  destroyPlayer();
+  
+  // ✅ Small delay for browser resource release
+  setTimeout(() => {
+    currentTab = tab;
+    document.body.className = tab === 'fifa' ? 'tab-fifa' : 'tab-livetv';
+    document.querySelectorAll('#desktopTabs a, #bottomNav a')
+      .forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+    
+    const heroTitle = document.getElementById('heroTitle');
+    const heroDesc = document.getElementById('heroDesc');
+    const sidebarCats = document.getElementById('sidebarCats');
+    const serverTabs = document.getElementById('serverTabsWrap');
+    
+    if(tab === 'fifa'){
+      heroTitle.innerHTML = 'FIFA World Cup <span class="vs">·</span> লাইভ';
+      heroDesc.textContent = 'স্পোর্টস চ্যানেল ও আইপি টিভি – যেকোনো ডিভাইসে';
+      sidebarCats.style.display = 'none';
+      serverTabs.classList.remove('visible');
+      
+      renderFifaSections();
+      buildSidebar(allStreams);
+      buildMobileChannels();
+      
+      if(allStreams.length > 0){
+        if(currentStreamIndex >= allStreams.length) currentStreamIndex = 0;
+        loadStream(currentStreamIndex, false);
+      }
+    } else {
+      heroTitle.innerHTML = 'Live TV <span class="vs">·</span> আইপি টিভি';
+      heroDesc.textContent = 'বিভিন্ন ক্যাটাগরির লাইভ টিভি চ্যানেল';
+      sidebarCats.style.display = 'flex';
+      serverTabs.classList.add('visible');
+      
+      if(liveTVChannels.length === 0){
+        switchServer(currentServer);
+      } else {
+        buildSidebar(currentFilteredList.length ? currentFilteredList : liveTVChannels);
+        renderLivetvSections();
+        buildMobileChannels();
+        
+        if(liveTVChannels.length > 0){
+          loadLiveStream(liveTvStreamIndex, currentFilteredList.length ? currentFilteredList : liveTVChannels, false);
+        }
+      }
     }
-    // ✅ স্ক্রোল টপে রিসেট
+    
     const mobileChGrid = document.getElementById('mobileChannelsGrid');
     if(mobileChGrid) mobileChGrid.scrollTop = 0;
-  }
+  }, 100);
 }
 
 // ============================================================
@@ -1186,8 +1312,8 @@ function retryStream(){
 document.getElementById('sidebarSearch').addEventListener('input', function(){
   const val = this.value.trim().toLowerCase();
   let list;
-  if(currentTab==='fifa'){ list = allStreams.filter(s=>s.name.toLowerCase().includes(val)); }
-  else { list = liveTVChannels.filter(ch=>ch.name.toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
+  if(currentTab==='fifa'){ list = allStreams.filter(s=>sanitizeChannelName(s.name).toLowerCase().includes(val)); }
+  else { list = liveTVChannels.filter(ch=>sanitizeChannelName(ch.name).toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
   buildSidebar(list);
 });
 
@@ -1204,15 +1330,16 @@ document.getElementById('msClose').addEventListener('click', ()=>{ mobileSearchO
 mobileSearchInput.addEventListener('input', function(){
   const val = this.value.trim().toLowerCase();
   let list;
-  if(currentTab==='fifa'){ list = allStreams.filter(s=>s.name.toLowerCase().includes(val)); }
-  else { list = liveTVChannels.filter(ch=>ch.name.toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
+  if(currentTab==='fifa'){ list = allStreams.filter(s=>sanitizeChannelName(s.name).toLowerCase().includes(val)); }
+  else { list = liveTVChannels.filter(ch=>sanitizeChannelName(ch.name).toLowerCase().includes(val)||(ch.group||'').toLowerCase().includes(val)); }
   mobileSearchResults.innerHTML = '';
   if(list.length===0){ mobileSearchResults.innerHTML = '<div class="muted-note">কোন চ্যানেল পাওয়া যায়নি</div>'; return; }
   list.forEach(ch=>{
     const div = document.createElement('div');
     div.className = 'ms-item';
     const logo = ch.logo || FALLBACK_LOGO;
-    div.innerHTML = `<img class="ms-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div><div class="ms-name">${escapeHtml(ch.name)}</div><div class="ms-cat">${escapeHtml(ch.group||'')}</div></div>`;
+    const name = sanitizeChannelName(ch.name);
+    div.innerHTML = `<img class="ms-logo" src="${logo}" onerror="this.src='${FALLBACK_LOGO}'" alt=""><div><div class="ms-name">${escapeHtml(name)}</div><div class="ms-cat">${escapeHtml(ch.group||'')}</div></div>`;
     div.onclick = ()=>{
       mobileSearchOverlay.classList.remove('active');
       if(currentTab==='fifa'){
@@ -1250,20 +1377,17 @@ document.addEventListener('keydown', (e)=>{
 // INIT
 // ============================================================
 window.addEventListener('load', ()=>{
-  // Set default tab to FIFA
   currentTab = 'fifa';
   document.body.className = 'tab-fifa';
   document.querySelectorAll('#desktopTabs a, #bottomNav a').forEach(el => el.classList.toggle('active', el.dataset.tab==='fifa'));
   document.getElementById('sidebarCats').style.display='none';
-  document.getElementById('serverTabsWrap').classList.remove('visible'); // FIFA তে সার্ভার ট্যাব লুকান
+  document.getElementById('serverTabsWrap').classList.remove('visible');
   
-  // Load FIFA streams (manual channels)
   renderFifaSections();
   buildSidebar(allStreams);
-  buildMobileChannels(); // ✅ মোবাইল চ্যানেল গ্রিড বিল্ড করুন
+  buildMobileChannels();
   if(allStreams.length>0) loadStream(0, false);
   
-  // Initialize Server 1 as default for Live TV
   switchServer(1);
 
   const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:0.1});
@@ -1295,6 +1419,7 @@ window.scrollToPlayer = scrollToPlayer;
 window.switchTab = switchTab;
 window.switchServer = switchServer;
 window.toggleFavorite = toggleFavorite;
+window.toggleFavoriteMobile = toggleFavoriteMobile;
 </script>
 </body>
 </html>
