@@ -372,6 +372,52 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
     font-size:.75rem;
 }
 
+/* ============ NOTICE SCROLLER ============ */
+.notice-scroller-wrap{
+    width:100%;max-width:100%;box-sizing:border-box;
+    overflow:hidden;background:rgba(0,0,0,.55);
+    border:1px solid var(--border);border-radius:10px;
+    margin-top:10px;flex-shrink:0;height:32px;
+    display:none;align-items:center;
+    backdrop-filter:blur(8px);
+}
+.notice-scroller-wrap.visible{display:flex}
+.notice-scroller-wrap::before{
+    content:"📢";flex-shrink:0;padding:0 10px;font-size:.8rem;
+}
+.notice-scroller{
+    display:flex;white-space:nowrap;animation:scrollNotice 45s linear infinite;
+    font-size:.72rem;color:var(--text-muted);padding-left:100%;
+}
+.notice-scroller span{
+    color:var(--primary);font-weight:500;margin:0 12px;
+}
+@keyframes scrollNotice{
+    0%{transform:translateX(0)}
+    100%{transform:translateX(-100%)}
+}
+
+/* ============ PROGRESS TOAST ============ */
+.progress-toast{
+    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,rgba(12,15,26,.95),rgba(8,10,18,.98));
+    color:#fff;padding:12px 22px;border-radius:14px;
+    border:1px solid var(--primary);box-shadow:0 10px 40px rgba(0,0,0,.8),0 0 20px var(--primary-glow);
+    z-index:999;font-size:.82rem;display:none;max-width:92%;text-align:center;
+    backdrop-filter:blur(14px);
+}
+.progress-toast.visible{display:block;animation:fadeInUp .3s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ============ REFRESH BUTTON ============ */
+.admin-link.refreshing{
+    pointer-events:none;opacity:.65;
+}
+.admin-link.refreshing span{
+    display:inline-block;animation:spinRefresh .8s linear infinite;
+}
+@keyframes spinRefresh{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width:768px){
     :root{--header-h:60px;--footer-h:78px;--sidebar-w:100%}
@@ -526,7 +572,7 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
     </div>
     <div class="header-right">
         <span class="live-badge">LIVE</span>
-        <a href="#" class="admin-link">⚙ <span>Settings</span></a>
+        <button class="admin-link" id="refreshBtn">🔄 <span>Refresh</span></button>
     </div>
 </header>
 
@@ -571,6 +617,9 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
                 <p id="npCat">—</p>
             </div>
             <span class="np-live">● ON AIR</span>
+        </div>
+        <div class="notice-scroller-wrap" id="noticeScroller">
+            <div class="notice-scroller" id="noticeText"></div>
         </div>
     </div>
 
@@ -636,20 +685,21 @@ const CONFIG = {
     },
     SPORTS_KEYWORDS: [
         'fifa', 'sport', 'sports', 'world cup', 'worldcup',
-        'football', 'soccer', 'cricket', 'tennis', 'basketball',
-        'hockey', 'olympic', 'espn', 'bein', 'bein sport',
+        'football', 'soccer', 'btv', 'tennis', 'basketball',
+        'somoy', 'olympic', 'espn', 'bein', 'bein sport',
         'live match', 'live sports', 'goal', 'stadium',
-        'tournament', 'championship', 'league', 'premier',
-        'world_cup', 'world-cup'
+        'tournament', 'championship', 'league', 'premier',  
+        'world_cup', 'world-cup','world-cup'
     ],
     DEFAULT_LOGOS: {
         sports: 'https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png',
         tv: 'https://stream.codecloud.bd/uploads/logos/logo_6a2a3c3cf15b8.png'
     },
-    CHECK_TIMEOUT: 3000,
+    CHECK_TIMEOUT: 5000,
     CACHE_DURATION: 3600000,
     MAX_NAME_LENGTH: 50,
-    DEFAULT_CHANNELS_TO_KEEP: 10
+    DEFAULT_CHANNELS_TO_KEEP: 10,
+    CHECK_BATCH_SIZE: 10
 };
 
 // ========== STATE ==========
@@ -659,6 +709,7 @@ let isLoading = false;
 let allChannels = [];
 let currentCategory = 'all';
 let isInitialLoad = true;
+let checkAbortController = null;
 
 // ========== DOM REFS ==========
 const video = document.getElementById('videoPlayer');
@@ -806,13 +857,26 @@ function parseM3U(m3uContent, serverId) {
             const urlLine = lines[i + 1]?.trim();
             
             if (urlLine && !urlLine.startsWith('#')) {
+                // Filter: only .m3u8 links
+                if (!urlLine.toLowerCase().endsWith('.m3u8')) continue;
+                
                 const logoMatch = infoLine.match(/tvg-logo="([^"]*)"/);
                 const nameMatch = infoLine.match(/,([^,]*)$/);
                 const groupMatch = infoLine.match(/group-title="([^"]*)"/);
                 
+                let rawName = nameMatch ? nameMatch[1].trim() : '';
+                
+                // 3-word rule: if name has more than 3 words, shorten to "Unnamed"
+                if (rawName) {
+                    const words = rawName.trim().split(/\s+/);
+                    if (words.length > 3) {
+                        rawName = words.slice(0, 3).join(' ') + '...';
+                    }
+                }
+                
                 channels.push({
                     id: `server_${serverId}_${i}_${Date.now()}`,
-                    name: nameMatch ? nameMatch[1].trim() : '',
+                    name: rawName,
                     logo: logoMatch ? logoMatch[1] : CONFIG.DEFAULT_LOGOS.tv,
                     group: groupMatch ? groupMatch[1] : 'Uncategorized',
                     cat: groupMatch ? groupMatch[1] : 'Uncategorized',
@@ -938,6 +1002,95 @@ function loadDefaultChannels() {
     return channels;
 }
 
+// ========== CHANNEL CHECKER (PARALLEL BATCH) ==========
+async function checkChannelWorking(url, signal) {
+    try {
+        if (signal && signal.aborted) return false;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), CONFIG.CHECK_TIMEOUT);
+        if (signal) signal.addEventListener('abort', () => controller.abort());
+        
+        const resp = await fetch(url, { 
+            method: 'HEAD', 
+            mode: 'cors',
+            signal: controller.signal 
+        });
+        clearTimeout(timeout);
+        return resp.ok;
+    } catch (e) {
+        try {
+            if (signal && signal.aborted) return false;
+            const controller2 = new AbortController();
+            const timeout2 = setTimeout(() => controller2.abort(), CONFIG.CHECK_TIMEOUT);
+            if (signal) signal.addEventListener('abort', () => controller2.abort());
+            
+            const resp2 = await fetch(url, { 
+                mode: 'cors',
+                signal: controller2.signal 
+            });
+            clearTimeout(timeout2);
+            if (!resp2.ok) return false;
+            const text = await resp2.text();
+            return text.includes('#EXTINF') || text.includes('#EXTM3U');
+        } catch (e2) {
+            return false;
+        }
+    }
+}
+
+async function checkChannelsParallel(channels, onBatchDone, signal) {
+    const working = [];
+    const total = channels.length;
+    let checked = 0;
+    const batchSize = CONFIG.CHECK_BATCH_SIZE;
+    
+    for (let i = 0; i < total; i += batchSize) {
+        if (signal && signal.aborted) break;
+        
+        const batch = channels.slice(i, i + batchSize);
+        const results = await Promise.allSettled(
+            batch.map(async (ch) => {
+                const isOk = await checkChannelWorking(ch.url, signal);
+                return isOk ? ch : null;
+            })
+        );
+        
+        for (const r of results) {
+            checked++;
+            if (r.status === 'fulfilled' && r.value) {
+                r.value.isWorking = true;
+                working.push(r.value);
+            }
+        }
+        
+        if (onBatchDone) {
+            onBatchDone(checked, total, working.length);
+        }
+    }
+    
+    return working;
+}
+
+// ========== PROGRESS TOAST ==========
+function showProgressToast(checked, total, working) {
+    const toast = document.getElementById('progressToast') || createProgressToast();
+    toast.innerHTML = `🔄 মোট <strong>${total}</strong>টি চ্যানেলের মধ্যে <strong>${checked}</strong>টি চেক করা হয়েছে<br><span style="color:var(--primary)">✅ ${working}টি ওয়ার্কিং চ্যানেল পাওয়া গেছে</span>`;
+    toast.classList.add('visible');
+}
+
+function hideProgressToast() {
+    const toast = document.getElementById('progressToast');
+    if (toast) toast.classList.remove('visible');
+}
+
+function createProgressToast() {
+    const div = document.createElement('div');
+    div.id = 'progressToast';
+    div.className = 'progress-toast';
+    document.body.appendChild(div);
+    return div;
+}
+
 // ========== LOAD DEFAULT WITH SPORTS MERGE ==========
 async function loadDefaultWithSports() {
     const defaultChannels = loadDefaultChannels();
@@ -979,7 +1132,7 @@ async function loadDefaultWithSports() {
 }
 
 // ========== LOAD SINGLE SERVER ==========
-async function loadSingleServer(serverId) {
+async function loadSingleServer(serverId, signal) {
     const channels = await fetchServerChannels(serverId);
     if (channels.length === 0) {
         showNotification(`⚠️ Server ${serverId} returned 0 channels`);
@@ -988,10 +1141,18 @@ async function loadSingleServer(serverId) {
     
     channels.forEach(ch => {
         ch.displayName = cleanChannelName(ch);
-        ch.isWorking = true;
     });
     
-    return removeDuplicates(channels);
+    // Check all channels in parallel batches, only keep working ones
+    showProgressToast(0, channels.length, 0);
+    
+    const workingChannels = await checkChannelsParallel(channels, (checked, total, found) => {
+        showProgressToast(checked, total, found);
+    }, signal);
+    
+    hideProgressToast();
+    
+    return removeDuplicates(workingChannels);
 }
 
 // ========== EXTRACT CATEGORIES ==========
@@ -1087,11 +1248,19 @@ function renderCategories(categories) {
 
 // ========== SWITCH TAB ==========
 async function switchTab(tabId, showLoadingMsg = true) {
-    if (isLoading) return;
+    // Cancel any previous checking
+    if (checkAbortController) {
+        checkAbortController.abort();
+        checkAbortController = null;
+    }
+    isLoading = false; // Reset so new tab can load
+    
     if (tabId === currentTab && !isInitialLoad) return;
     
     isLoading = true;
     currentTab = tabId;
+    checkAbortController = new AbortController();
+    const signal = checkAbortController.signal;
     
     document.querySelectorAll('.server-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabId);
@@ -1113,10 +1282,12 @@ async function switchTab(tabId, showLoadingMsg = true) {
         } else {
             const serverId = parseInt(tabId);
             if (!cachedChannels[tabId]) {
-                cachedChannels[tabId] = await loadSingleServer(serverId);
+                cachedChannels[tabId] = await loadSingleServer(serverId, signal);
             }
             channels = cachedChannels[tabId];
         }
+        
+        if (signal.aborted) return;
         
         const categories = extractCategories(channels);
         renderCategories(categories);
@@ -1129,11 +1300,14 @@ async function switchTab(tabId, showLoadingMsg = true) {
         }
         
     } catch (error) {
+        if (signal.aborted) return;
         console.error('Error loading channels:', error);
         list.innerHTML = '<div class="no-results">❌ Failed to load channels</div>';
     } finally {
         isLoading = false;
         isInitialLoad = false;
+        hideProgressToast();
+        checkAbortController = null;
     }
 }
 
@@ -1207,6 +1381,56 @@ document.querySelectorAll('.server-tab').forEach(tab => {
     });
 });
 
+// ========== REFRESH BUTTON ==========
+document.getElementById('refreshBtn').addEventListener('click', () => {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('refreshing');
+    btn.querySelector('span').textContent = 'Refreshing...';
+    
+    // Cancel any ongoing check
+    if (checkAbortController) {
+        checkAbortController.abort();
+        checkAbortController = null;
+    }
+    isLoading = false;
+    
+    // Clear all caches
+    cachedChannels = {};
+    isInitialLoad = true;
+    
+    // Reload current tab
+    switchTab(currentTab, true).then(() => {
+        btn.classList.remove('refreshing');
+        btn.querySelector('span').textContent = 'Refresh';
+    }).catch(() => {
+        btn.classList.remove('refreshing');
+        btn.querySelector('span').textContent = 'Refresh';
+    });
+});
+
+// ========== NOTICE SCROLLER ==========
+function initNoticeScroller() {
+    const scroller = document.getElementById('noticeScroller');
+    const text = document.getElementById('noticeText');
+    if (!scroller || !text) return;
+    
+    const messages = [
+        'স্বাগতম Salman Stream-এ! 🎬 বিনামূল্যে লাইভ টিভি দেখুন।',
+        '⚠️ সার্ভার থেকে সব চ্যানেল অটোমেটিক চেক হয় — শুধু ওয়ার্কিং চ্যানেল দেখানো হয়।',
+        '🔄 রিফ্রেশ বাটনে ক্লিক করলে সব চ্যানেল নতুন করে চেক হবে।',
+        '📡 ভিডিও বাফারিং হলে অন্য চ্যানেল সিলেক্ট করুন অথবা রিফ্রেশ করুন।',
+        '🔍 সার্চ বক্সে চ্যানেলের নাম লিখে সহজে খুঁজে নিন।',
+        '⚡ পারফরম্যান্সের জন্য প্রতি ব্যাচে ১০টি চ্যানেল প্যারালালে চেক হয়।',
+        '📊 নিচের টোস্ট মেসেজে রিয়েল-টাইমে চেকিং প্রগ্রেস দেখুন।',
+        '🎮 সার্ভার ট্যাব পরিবর্তন করলে আগের চেকিং বন্ধ হয়ে যাবে।',
+        '💎 সকল চ্যানেল অটোmatic ক্যাশে হয় — দ্রুত লোড হয়।',
+        '📺 Developed by <span>@Farshi999</span> — Telegram-এ যুক্ত থাকুন!'
+    ];
+    
+    text.innerHTML = messages.join('&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;');
+    scroller.classList.add('visible');
+}
+
 // ========== KEYBOARD SHORTCUTS ==========
 document.addEventListener('keydown', e => {
     const a = document.querySelector('.ch-item.active');
@@ -1264,6 +1488,9 @@ drawerBg2.addEventListener('click', () => {
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize notice scroller
+    initNoticeScroller();
+    
     // Hide all default channel items from DOM (they will be loaded dynamically)
     const defaultItems = document.querySelectorAll('.ch-item[data-id]');
     defaultItems.forEach(item => {
