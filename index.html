@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Salman Stream — Premium Live TV</title>
 <meta name="theme-color" content="#020617">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Oswald:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -273,12 +273,9 @@ video::-webkit-media-controls-fullscreen-button{display:none!important}
     border-left:1px solid var(--border-strong);
     display:flex;flex-direction:column;overflow:hidden;z-index:100;
 }
-.sidebar-head{padding:18px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sidebar-head h3{
-    font-family:'Oswald',sans-serif;font-size:1.05rem;font-weight:600;color:#fff;
-    letter-spacing:2px;display:flex;align-items:center;gap:8px;
-}
-.search-wrap{position:relative;margin-top:14px}
+.sidebar-head{padding:14px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sidebar-head h3{display:none}
+.search-wrap{position:relative;margin-top:0}
 .search-wrap input{
     width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);
     border-radius:12px;padding:11px 16px 11px 40px;
@@ -382,15 +379,13 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
     backdrop-filter:blur(8px);
 }
 .notice-scroller-wrap.visible{display:flex}
-.notice-scroller-wrap::before{
-    content:"📢";flex-shrink:0;padding:0 10px;font-size:.8rem;
-}
 .notice-scroller{
-    display:flex;white-space:nowrap;animation:scrollNotice 45s linear infinite;
-    font-size:.72rem;color:var(--text-muted);padding-left:100%;
+    display:flex;white-space:nowrap;animation:scrollNotice 50s linear infinite;
+    font-family:'Hind Siliguri','Poppins',sans-serif;
+    font-size:.8rem;color:var(--text);padding-left:100%;font-weight:500;letter-spacing:.2px;
 }
 .notice-scroller span{
-    color:var(--primary);font-weight:500;margin:0 12px;
+    color:var(--primary);font-weight:600;margin:0 18px;
 }
 @keyframes scrollNotice{
     0%{transform:translateX(0)}
@@ -410,13 +405,13 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
 @keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 /* ============ REFRESH BUTTON ============ */
-.admin-link.refreshing{
-    pointer-events:none;opacity:.65;
-}
-.admin-link.refreshing span{
-    display:inline-block;animation:spinRefresh .8s linear infinite;
-}
-@keyframes spinRefresh{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.admin-link.refreshing{pointer-events:none;opacity:.85}
+.refresh-spinner{display:none;width:14px;height:14px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.22);border-top-color:var(--primary);
+    animation:spin .7s linear infinite;vertical-align:-2px;}
+.admin-link.refreshing .refresh-icon{display:none}
+.admin-link.refreshing .refresh-spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width:768px){
@@ -572,7 +567,7 @@ footer .credit strong{background:var(--grad-primary);-webkit-background-clip:tex
     </div>
     <div class="header-right">
         <span class="live-badge">LIVE</span>
-        <button class="admin-link" id="refreshBtn">🔄 <span>Refresh</span></button>
+        <button class="admin-link" id="refreshBtn"><span class="refresh-icon">🔄</span><span class="refresh-spinner" aria-hidden="true"></span> <span class="refresh-label">Refresh</span></button>
     </div>
 </header>
 
@@ -1333,20 +1328,28 @@ function createNotification() {
     div.id = 'notification';
     div.style.cssText = `
         position: fixed;
-        bottom: 70px;
+        bottom: 90px;
         left: 50%;
         transform: translateX(-50%);
-        background: var(--bg-panel);
+        background: linear-gradient(135deg, rgba(12,15,26,.96), rgba(8,10,18,.98));
         color: #fff;
-        padding: 10px 20px;
-        border-radius: var(--radius);
+        padding: 11px 22px;
+        border-radius: 999px;
         border: 1px solid var(--primary);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        box-shadow: 0 8px 28px rgba(0,0,0,.6), 0 0 0 3px var(--primary-dim);
         z-index: 999;
-        font-size: 0.85rem;
+        font-family: 'Hind Siliguri','Poppins',sans-serif;
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: .2px;
         display: none;
-        max-width: 90%;
+        width: max-content;
+        max-width: calc(100% - 32px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         text-align: center;
+        backdrop-filter: blur(14px);
     `;
     document.body.appendChild(div);
     return div;
@@ -1385,28 +1388,23 @@ document.querySelectorAll('.server-tab').forEach(tab => {
 document.getElementById('refreshBtn').addEventListener('click', () => {
     const btn = document.getElementById('refreshBtn');
     btn.classList.add('refreshing');
-    btn.querySelector('span').textContent = 'Refreshing...';
-    
     // Cancel any ongoing check
     if (checkAbortController) {
         checkAbortController.abort();
         checkAbortController = null;
     }
     isLoading = false;
-    
     // Clear all caches
     cachedChannels = {};
     isInitialLoad = true;
-    
     // Reload current tab
     switchTab(currentTab, true).then(() => {
         btn.classList.remove('refreshing');
-        btn.querySelector('span').textContent = 'Refresh';
     }).catch(() => {
         btn.classList.remove('refreshing');
-        btn.querySelector('span').textContent = 'Refresh';
     });
 });
+
 
 // ========== NOTICE SCROLLER ==========
 function initNoticeScroller() {
@@ -1415,19 +1413,18 @@ function initNoticeScroller() {
     if (!scroller || !text) return;
     
     const messages = [
-        'স্বাগতম Salman Stream-এ! 🎬 বিনামূল্যে লাইভ টিভি দেখুন।',
-        '⚠️ সার্ভার থেকে সব চ্যানেল অটোমেটিক চেক হয় — শুধু ওয়ার্কিং চ্যানেল দেখানো হয়।',
-        '🔄 রিফ্রেশ বাটনে ক্লিক করলে সব চ্যানেল নতুন করে চেক হবে।',
-        '📡 ভিডিও বাফারিং হলে অন্য চ্যানেল সিলেক্ট করুন অথবা রিফ্রেশ করুন।',
-        '🔍 সার্চ বক্সে চ্যানেলের নাম লিখে সহজে খুঁজে নিন।',
-        '⚡ পারফরম্যান্সের জন্য প্রতি ব্যাচে ১০টি চ্যানেল প্যারালালে চেক হয়।',
-        '📊 নিচের টোস্ট মেসেজে রিয়েল-টাইমে চেকিং প্রগ্রেস দেখুন।',
-        '🎮 সার্ভার ট্যাব পরিবর্তন করলে আগের চেকিং বন্ধ হয়ে যাবে।',
-        '💎 সকল চ্যানেল অটোmatic ক্যাশে হয় — দ্রুত লোড হয়।',
-        '📺 Developed by <span>@Farshi999</span> — Telegram-এ যুক্ত থাকুন!'
+        'স্বাগতম Salman Stream-এ, বিনামূল্যে লাইভ টিভি উপভোগ করুন।',
+        'সার্ভার থেকে সব চ্যানেল অটোমেটিক চেক হয়, শুধু ওয়ার্কিং চ্যানেল দেখানো হয়।',
+        'রিফ্রেশ বাটনে ক্লিক করলে সব চ্যানেল নতুন করে চেক হবে।',
+        'ভিডিও বাফারিং হলে অন্য চ্যানেল সিলেক্ট করুন অথবা রিফ্রেশ করুন।',
+        'সার্চ বক্সে চ্যানেলের নাম লিখে সহজেই খুঁজে নিন।',
+        'সার্ভার ট্যাব পরিবর্তন করলে আগের চেকিং বন্ধ হয়ে যাবে।',
+        'নিচের টোস্ট মেসেজে রিয়েল-টাইম চেকিং প্রগ্রেস দেখুন।',
+        'সার্ভার ট্যাব পরিবর্তন করলে আগের চেকিং বন্ধ হয়ে যাবে।',
+        'সকল চ্যানেল অটোমেটিক ক্যাশে হয়, দ্রুত লোড হয়।',
+        'Developed by Salman Farshi all rights reserved.'
     ];
-    
-    text.innerHTML = messages.join('&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;');
+    text.textContent = messages.join('     ,     ');
     scroller.classList.add('visible');
 }
 
